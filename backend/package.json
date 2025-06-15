@@ -2,12 +2,14 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/index.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev"
   },
   "keywords": [],
   "author": "",
@@ -15,8 +17,11 @@
   "type": "commonjs",
   "dependencies": {
     "@prisma/client": "^6.9.0",
+    "@types/dotenv": "^6.1.1",
     "cors": "^2.8.5",
-    "express": "^5.1.0"
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "rm": "^0.1.8"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
@@ -25,6 +30,7 @@
     "nodemon": "^3.1.10",
     "prisma": "^6.9.0",
     "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.3"
   }
 }
