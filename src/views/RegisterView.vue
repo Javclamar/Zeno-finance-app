@@ -5,14 +5,16 @@
             <div class="form-group">
                 <label for="username">Email:</label>
                 <input type="text" id="username" v-model="email" required />
-                <label for="password">Contraseña:</label>
+                <label for="password">Password:</label>
+                <input type="password" id="password" v-model="password" required />
+                <label for="password">Repeat Password:</label>
                 <input type="password" id="password" v-model="password" required />
             </div>
             <button type="submit">Register</button>
             <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
             <p v-if="successMessage" class="success">{{ successMessage }}</p>
         </form>
-        <p>Ya tienes una cuenta? <router-link to="/">Inicia sesión aquí</router-link></p>
+        <p>Already have an account? <router-link to="/">Login here</router-link></p>
     </div>
 </template>
 

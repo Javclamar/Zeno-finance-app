@@ -5,14 +5,14 @@
             <div class="form-group">
                 <label for="username">Email:</label>
                 <input type="text" id="username" v-model="email" required />
-                <label for="password">Contraseña:</label>
+                <label for="password">Password:</label>
                 <input type="password" id="password" v-model="password" required />
             </div>
-            <button type="submit">Iniciar Sesión</button>
+            <button type="submit">Login</button>
             <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
             <p v-if="successMessage" class="success">{{ successMessage }}</p>
         </form>
-        <p>Don't have an account yet? <router-link to="/register">Register Here</router-link></p>
+        <div class="message">Don't have an account yet? <router-link to="/register">Register Here</router-link></div>
     </div>
 </template>
 
@@ -101,6 +101,12 @@ button {
     border-radius: 5px;
     cursor: pointer;
     font-size: 1rem;
+}
+
+.message {
+    margin-top: 1rem;
+    text-align: center;
+    color: var(--texto);
 }
 
 button:hover {

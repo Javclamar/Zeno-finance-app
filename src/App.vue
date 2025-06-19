@@ -54,6 +54,8 @@ onMounted(() => {
   flex: 1;
   padding: 1rem;
   width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
   background-color: var(--fondo);
   align-items: center;
 }
