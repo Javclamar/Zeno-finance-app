@@ -8,11 +8,12 @@
                 <label for="password">Password:</label>
                 <input type="password" id="password" v-model="password" required />
             </div>
-            <button type="submit">Login</button>
+            <button type="submit">Sign In</button>
             <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
             <p v-if="successMessage" class="success">{{ successMessage }}</p>
         </form>
-        <div class="message">Don't have an account yet? <router-link to="/register">Register Here</router-link></div>
+        <div class="message">Don't have an account yet? <router-link to="/register" class="link">Sign Up</router-link>
+        </div>
     </div>
 </template>
 
@@ -26,15 +27,17 @@ const password = ref('');
 const errorMessage = ref('');
 const successMessage = ref('');
 const router = useRouter();
+
 const handleLogin = async () => {
     errorMessage.value = '';
     successMessage.value = '';
 
     try {
-        const response = await axios.post('/api/login', {
+        const response = await axios.post('/api/auth/login', {
             email: email.value,
             password: password.value
         });
+        console.log('Login response:', response.data);
 
         if (response.data.token) {
             localStorage.setItem('token', response.data.token);
@@ -46,8 +49,8 @@ const handleLogin = async () => {
             errorMessage.value = 'Incorrect email or password.';
         }
     } catch (error) {
-        console.error('Error during login:', error);
-        errorMessage.value = 'There was an error during login. Please try again later.';
+        console.error('Error during login:', error.response.data.error);
+        errorMessage.value = error.response.data.error;
     }
 };
 </script>
@@ -66,8 +69,9 @@ const handleLogin = async () => {
 .title {
     font-size: 2rem;
     margin-bottom: 1rem;
+    font-weight: bold;
     text-align: center;
-    color: var(--texto);
+    color: #ffff;
 }
 
 .form-group {
@@ -83,24 +87,28 @@ const handleLogin = async () => {
 
 .form-group input {
     padding: 0.5rem;
-    border: 1px solid var(--borde);
-    border-radius: 5px;
+    border: 1px solid var(--fondo);
+    background-color: var(--fondo-secundario);
+    outline: 0;
+    border-radius: 0.5rem;
     font-size: 1rem;
+    color: var(--texto);
 }
 
 .form-group input:focus {
-    border-color: var(--borde-foco);
-    outline: none;
+    border-color: rgba(167, 139, 250);
 }
 
 button {
-    padding: 0.5rem;
-    background-color: var(--boton);
-    color: white;
+    display: block;
+    width: 100%;
+    background-color: rgba(167, 139, 250, 1);
+    padding: 0.75rem;
+    text-align: center;
+    color: var(--fondo);
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
+    border-radius: 0.375rem;
+    font-weight: 600;
 }
 
 .message {
@@ -109,8 +117,27 @@ button {
     color: var(--texto);
 }
 
+.link {
+    color: var(--boton);
+    text-decoration: none;
+    font-weight: bold;
+}
+
 button:hover {
     background-color: var(--boton-hover);
     transition: 1s;
+}
+
+.error {
+    color: #e74c3c;
+    text-align: center;
+    margin-top: 1rem;
+    font-weight: bold;
+
+}
+
+.success {
+    color: var(--boton-hover);
+    text-align: center;
 }
 </style>

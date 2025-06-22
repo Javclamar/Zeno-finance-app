@@ -6,7 +6,7 @@
     </div>
     <div class="center">
       <nav>
-        <ul class="nav">
+        <ul class="nav1">
           <li><router-link to="/">Home</router-link></li>
           <li><router-link to="/about">About</router-link></li>
           <li><router-link to="/contact">Contact</router-link></li>
@@ -14,21 +14,32 @@
       </nav>
     </div>
     <div class="right">
-      <nav>
-        <ul class="nav">
+      <nav v-if="!isLoggedIn">
+        <ul class="nav2">
           <li class="login-link"><router-link to="/login" class="texto">Login</router-link></li>
           <li class="signup-link"><router-link to="/register" class="texto-negro">Sign Up</router-link></li>
         </ul>
+      </nav>
+      <nav v-else>
+        <router-link to="/profile" style="color: var(--texto);">
+          <font-awesome-icon icon="user" size="2x" style="fill: red;" />
+        </router-link>
       </nav>
     </div>
   </header>
 </template>
 
-<script>
+<script setup>
 import '@/assets/main.css';
-export default {
-  name: 'Header'
-}
+import { useAuthStore } from '@/stores/auth';
+import { onMounted } from 'vue';
+
+const auth = useAuthStore();
+const isLoggedIn = auth.isLoggedIn;
+
+onMounted(() => {
+  auth.loadTokenFromStorage();
+});
 </script>
 
 <style scoped>
@@ -66,13 +77,17 @@ export default {
   max-width: 100%;
 }
 
-.nav {
+.nav1,
+.nav2 {
   list-style: none;
   display: flex;
   gap: 2rem;
-  background-color: var(--fondo-secundario);
   border-radius: 1rem;
   padding: 0.5rem;
+}
+
+.nav1 {
+  background-color: var(--fondo-secundario);
 }
 
 
@@ -124,10 +139,6 @@ export default {
   transition: 300ms;
 }
 
-.signup-link:hover span {
-  background: none;
-}
-
 .texto {
   color: var(--texto);
   text-decoration: none;
@@ -140,7 +151,7 @@ export default {
   font-weight: bold
 }
 
-.nav a {
+.nav1 a {
   color: var(--texto);
   text-decoration: none;
   font-weight: bold;
@@ -149,12 +160,7 @@ export default {
   float: left;
 }
 
-.nav a:hover {
-  background-color: var(--fondo);
-  transition: 1s
-}
-
-.nav a.active {
+.nav1 a.active {
   background-image: linear-gradient(144deg, #af40ff, #5b42f3 50%, #00ddeb);
 }
 </style>

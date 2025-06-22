@@ -14,7 +14,7 @@
   --fondo-secundario: #393E46;
   --resaltado: #00ADB5
   --texto: #EEEEEE;
-  --boton: #00ADB5;
+  --boton: rgba(167, 139, 250, 1);;
   --boton-hover: hsla(160, 100%, 37%, 1);
 }
 
@@ -23,5 +23,9 @@
     padding: 0.5rem;
     flex-direction: column;
     align-items: stretch;
+  }
+  .header {
+    flex-direction: column;
+    align-items: center;
   }
 }

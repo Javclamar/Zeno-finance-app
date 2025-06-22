@@ -2,9 +2,9 @@
 <template>
   <div class="app-container">
     <HeaderComponent />
+
     <main class="main-content">
-      <router-view v-if="estaAutenticado" />
-      <LoginView v-else />
+      <router-view />
     </main>
 
     <FooterComponent />
@@ -17,7 +17,6 @@ import FooterComponent from '@/components/FooterComponent.vue'
 import HeaderComponent from '@/components/HeaderComponent.vue'
 import { jwtDecode } from 'jwt-decode'
 import { onMounted, ref } from 'vue'
-import LoginView from './views/LoginView.vue'
 
 const estaAutenticado = ref(false)
 
