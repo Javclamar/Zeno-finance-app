@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import '@/assets/main.css'
+import '@/assets/css/main.css'
 import FooterComponent from '@/components/FooterComponent.vue'
 import HeaderComponent from '@/components/HeaderComponent.vue'
 import { jwtDecode } from 'jwt-decode'
@@ -53,9 +53,9 @@ onMounted(() => {
   flex: 1;
   padding: 1rem;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+  margin-bottom: 2rem;
   background-color: var(--fondo);
   align-items: center;
+  height: fit-content;
 }
 </style>

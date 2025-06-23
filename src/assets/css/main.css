@@ -9,12 +9,19 @@
   align-items: center;
 }
 
+@font-face {
+  font-family: 'AtkinsonHyperlegibleMono';
+  src: url('../fonts/AtkinsonHyperlegibleMono-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 700;
+  font-style: normal;
+}
+
 :root {
-  --fondo: #222831;
-  --fondo-secundario: #393E46;
-  --resaltado: #00ADB5
-  --texto: #EEEEEE;
-  --boton: rgba(167, 139, 250, 1);;
+  --fondo: #0000;
+  --fondo-secundario: #133034;
+  --resaltado: #6265B8;
+  --texto: #ABE7E5;
+  --boton: #8E99E8;
   --boton-hover: hsla(160, 100%, 37%, 1);
 }
 

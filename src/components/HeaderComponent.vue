@@ -2,13 +2,13 @@
 <template>
   <header class="header">
     <div class="left">
-      <img src="@/assets/logo.svg" alt="Logo" class="logo" />
+      <img src="@/assets/images/logo.svg" alt="Logo" class="logo" />
     </div>
     <div class="center">
       <nav>
         <ul class="nav1">
           <li><router-link to="/">Home</router-link></li>
-          <li><router-link to="/about">About</router-link></li>
+          <li><router-link to="/dashboard">Dashboard</router-link></li>
           <li><router-link to="/contact">Contact</router-link></li>
         </ul>
       </nav>
@@ -17,7 +17,7 @@
       <nav v-if="!isLoggedIn">
         <ul class="nav2">
           <li class="login-link"><router-link to="/login" class="texto">Login</router-link></li>
-          <li class="signup-link"><router-link to="/register" class="texto-negro">Sign Up</router-link></li>
+          <li class="signup-link"><router-link to="/register" class="texto-blanco">Sign Up</router-link></li>
         </ul>
       </nav>
       <nav v-else>
@@ -30,20 +30,52 @@
 </template>
 
 <script setup>
-import '@/assets/main.css';
+import '@/assets/css/main.css';
 import { useAuthStore } from '@/stores/auth';
+import gsap from 'gsap';
+import ScrollTrigger from 'gsap/src/ScrollTrigger';
 import { onMounted } from 'vue';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const auth = useAuthStore();
 const isLoggedIn = auth.isLoggedIn;
 
 onMounted(() => {
   auth.loadTokenFromStorage();
-});
+  let lastScroll = 0
+
+  ScrollTrigger.create({
+    start: 0,
+    onUpdate: (self) => {
+      const scroll = self.scroll()
+      if (scroll > lastScroll && scroll > 100) {
+        gsap.to('.header', {
+          y: window.innerHeight - 160,
+          duration: 0.7,
+          ease: 'power1.out'
+        })
+      } else {
+        gsap.to('.header', {
+          y: 0,
+          duration: 0.7,
+          ease: 'power1.out'
+        })
+      }
+
+      lastScroll = scroll
+    }
+  })
+
+})
 </script>
 
 <style scoped>
 .header {
+  position: fixed;
+  left: 0;
+  z-index: 1000;
+  height: 80px;
   width: 100%;
   background-color: var(--fondo);
   padding: 1rem;
@@ -88,6 +120,7 @@ onMounted(() => {
 
 .nav1 {
   background-color: var(--fondo-secundario);
+  gap: 10rem
 }
 
 
@@ -142,11 +175,13 @@ onMounted(() => {
 .texto {
   color: var(--texto);
   text-decoration: none;
+  font-family: 'AtkinsonHyperlegibleMono';
   font-weight: bold;
 }
 
-.texto-negro {
-  color: var(--fondo);
+.texto-blanco {
+  color: #ffff;
+  font-family: 'AtkinsonHyperlegibleMono';
   text-decoration: none;
   font-weight: bold
 }
@@ -154,8 +189,9 @@ onMounted(() => {
 .nav1 a {
   color: var(--texto);
   text-decoration: none;
+  font-family: 'AtkinsonHyperlegibleMono';
   font-weight: bold;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 2rem;
   border-radius: 4px;
   float: left;
 }

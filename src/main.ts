@@ -1,16 +1,16 @@
-import './assets/main.css'
+import './assets/css/main.css'
 
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faHome, faUser } from '@fortawesome/free-solid-svg-icons'
+import { faGear, faHome, faUser, faWallet } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import App from './App.vue'
 import router from './router'
 
-library.add(faUser, faHome)
+library.add(faUser, faHome, faGear, faWallet)
 const app = createApp(App)
 const pinia = createPinia()
 

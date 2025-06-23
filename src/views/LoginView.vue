@@ -43,7 +43,7 @@ const handleLogin = async () => {
             localStorage.setItem('token', response.data.token);
             successMessage.value = 'Successfully logged in! Redirecting...';
             setTimeout(() => {
-                router.push('/');
+                router.push('/dashboard');
             }, 2000);
         } else {
             errorMessage.value = 'Incorrect email or password.';
@@ -69,9 +69,10 @@ const handleLogin = async () => {
 .title {
     font-size: 2rem;
     margin-bottom: 1rem;
+    font-family: 'AtkinsonHyperlegibleMono';
     font-weight: bold;
     text-align: center;
-    color: #ffff;
+    color: var(--texto);
 }
 
 .form-group {
@@ -83,6 +84,8 @@ const handleLogin = async () => {
 .form-group label {
     margin-bottom: 0.5rem;
     color: var(--texto);
+    font-weight: 500;
+    font-family: 'AtkinsonHyperlegibleMono';
 }
 
 .form-group input {
@@ -93,6 +96,7 @@ const handleLogin = async () => {
     border-radius: 0.5rem;
     font-size: 1rem;
     color: var(--texto);
+    font-family: 'AtkinsonHyperlegibleMono';
 }
 
 .form-group input:focus {
@@ -102,10 +106,13 @@ const handleLogin = async () => {
 button {
     display: block;
     width: 100%;
-    background-color: rgba(167, 139, 250, 1);
+    background-image: linear-gradient(144deg, #af40ff, #5b42f3 50%, #00ddeb);
+    box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
     padding: 0.75rem;
     text-align: center;
-    color: var(--fondo);
+    color: #ffff;
+    font-size: 1.2rem;
+    font-family: 'AtkinsonHyperlegibleMono';
     border: none;
     border-radius: 0.375rem;
     font-weight: 600;
@@ -113,19 +120,23 @@ button {
 
 .message {
     margin-top: 1rem;
+    font-family: 'AtkinsonHyperlegibleMono';
     text-align: center;
     color: var(--texto);
 }
 
 .link {
     color: var(--boton);
+    margin-left: 0.5rem;
+    font-family: 'AtkinsonHyperlegibleMono';
     text-decoration: none;
     font-weight: bold;
 }
 
 button:hover {
-    background-color: var(--boton-hover);
-    transition: 1s;
+    outline: 0;
+    transform: scale(1.05);
+    transition: transform 0.2s ease-in-out;
 }
 
 .error {
@@ -133,11 +144,15 @@ button:hover {
     text-align: center;
     margin-top: 1rem;
     font-weight: bold;
+    font-family: 'AtkinsonHyperlegibleMono';
 
 }
 
 .success {
-    color: var(--boton-hover);
+    color: green;
     text-align: center;
+    margin-top: 1rem;
+    font-weight: bold;
+    font-family: 'AtkinsonHyperlegibleMono';
 }
 </style>

@@ -1,5 +1,10 @@
+import DashboardView from '@/views/DashboardView.vue';
+import LandingView from '@/views/LandingView.vue';
 import LoginView from '@/views/LoginView.vue';
 import RegisterView from '@/views/RegisterView.vue';
+import SettingsView from '@/views/SettingsView.vue';
+import TransactionsView from '@/views/TransactionsView.vue';
+
 import { createRouter, createWebHistory } from 'vue-router';
 
 
@@ -8,10 +13,8 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: (to) => {
-        const isAuthenticated = !!localStorage.getItem('token');
-        return isAuthenticated ? '/dashboard' : '/login';
-      }
+      name: 'home',
+      component: LandingView,
     },
     {
       path: '/login',
@@ -24,7 +27,26 @@ const router = createRouter({
       name: 'register',
       component: RegisterView,
       meta: { guestsOnly: true }
+    },
+    {
+      path: '/dashboard',
+      name: 'dashboard',
+      component: DashboardView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/transactions',
+      name: 'transactions',
+      component: TransactionsView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: SettingsView,
+      meta: { requiresAuth: true }
     }
+
   ],
 })
 
