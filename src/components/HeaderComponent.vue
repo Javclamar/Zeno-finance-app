@@ -43,30 +43,6 @@ const isLoggedIn = auth.isLoggedIn;
 
 onMounted(() => {
   auth.loadTokenFromStorage();
-  let lastScroll = 0
-
-  ScrollTrigger.create({
-    start: 0,
-    onUpdate: (self) => {
-      const scroll = self.scroll()
-      if (scroll > lastScroll && scroll > 100) {
-        gsap.to('.header', {
-          y: window.innerHeight - 160,
-          duration: 0.7,
-          ease: 'power1.out'
-        })
-      } else {
-        gsap.to('.header', {
-          y: 0,
-          duration: 0.7,
-          ease: 'power1.out'
-        })
-      }
-
-      lastScroll = scroll
-    }
-  })
-
 })
 </script>
 

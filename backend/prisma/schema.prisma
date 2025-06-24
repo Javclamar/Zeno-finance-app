@@ -24,11 +24,11 @@ model User {
 }
 
 model Transaction {
-  id        Int      @id @default(autoincrement())
-  name      String
+  id          Int      @id @default(autoincrement())
+  name        String
   description String
-  amount    Decimal
-  createdAt DateTime @default(now())
-  userId    Int
-  user      User     @relation("UserTransactions", fields: [userId], references: [id])
+  amount      Decimal
+  date   DateTime
+  userId      Int
+  user        User     @relation("UserTransactions", fields: [userId], references: [id])
 }

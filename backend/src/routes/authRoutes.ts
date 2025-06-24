@@ -4,6 +4,6 @@ import { loginController, registerController } from '../controllers/authControll
 const router = Router();
 
 router.post('/register', registerController);
-router.post('/login', loginController);
+router.post('/login', loginController);;
 
 export default router;

@@ -47,7 +47,7 @@ export const loginUserService = async (email: string, password: string) => {
         throw new Error("Invalid password");
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email }, "clave-secreta", {expiresIn: '1h'});
+    const token = jwt.sign({ id: user.id, email: user.email, name: user.name}, "clave-secreta", {expiresIn: '1h'});
 
     return token;
 }

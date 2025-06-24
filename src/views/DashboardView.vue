@@ -15,40 +15,60 @@
                 </router-link></div>
         </div>
         <div class="dashboard-content">
-            <div class='title'>Welcome {usuario}</div>
-        </div>
-        <div class='transactions'>
+            <div class='title'>Welcome {{ user.name }}</div>
+            <div class='balance'>
+                <div class='balance-container'> Total Balance
+                    <div class='description'> Take a look at your total</div>
+                    <div class='money'> {{ money }}$</div>
+                </div>
+                <div class='balance-container'> Income
+                    <div class='description'> Your income this month</div>
+                    <div class='money'> {{ money }}$</div>
+                </div>
+                <div class='balance-container'> Spending
+                    <div class='description'> Your spendings this month</div>
+                    <div class='money'> {{ money }}$</div>
+                </div>
+            </div>
+
+            <div class='flow'>
+                Balance flow this month
+                <div class='graph'>
+                    <BalanceChart />
+                </div>
+            </div>
+
+            <div class='transactions'> Last 3 transactions
+                 <div class='transaction'> </div>
+            </div>
+
+
 
         </div>
     </div>
 </template>
 
 <script setup>
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 import { onMounted, ref } from 'vue';
+import BalanceChart from '../components/BalanceChart.vue';
 
-
-const usuario = ref('');
-
-const fetchUserName = async () => {
-    try {
-        const response = await axios.get('/user/name');
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        usuario.value = await response.json();
-    } catch (error) {
-        console.error('Error fetching usuarios:', error);
-    }
-};
+const token = localStorage.getItem('token');
+const user = jwtDecode(token);
+const money = ref(null);
+const transactions = ref(null);
 
 const fetchUserTransactions = async () => {
     try {
-        const response = await axios.get('/user/transactions');
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+        const response = await axios.get('/api/user/transactions', {
+            params: { id: user.id },
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
         }
-        const transactions = await response.json();
-        console.log(transactions);
+        );
+        transactions.value = await response.data;
     } catch (error) {
         console.error('Error fetching user transactions:', error);
     }
@@ -56,25 +76,26 @@ const fetchUserTransactions = async () => {
 
 const fetchUserMoney = async () => {
     try {
-        const response = await axios.get('/user/money');
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+        const response = await axios.get('/api/user/money', {
+            params: { id: user.id },
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
         }
-        const money = await response.json();
-        console.log(money);
+        );
+        money.value = await response.data;
     } catch (error) {
         console.error('Error fetching user money:', error);
     }
 };
 
 const fetchUserData = async () => {
-    await fetchUserName();
     await fetchUserTransactions();
     await fetchUserMoney();
 };
 
 onMounted(() => {
-    fetchUserData
+    fetchUserData();
 });
 </script>
 
@@ -146,17 +167,87 @@ onMounted(() => {
 }
 
 .title {
-    grid-column: span 2 / span 2;
-    font-size: 2rem;
-    font-weight: bold;
+    display: flex;
+    grid-column: span 3 / span 3;
+    font-size: 2.5rem;
+    font-weight: 700;
     font-family: 'AtkinsonHyperlegibleMono';
     color: var(--texto);
     text-align: center;
     align-items: center;
-    margin: 1rem;
+    justify-content: center;
 }
 
 .texto-blanco {
     color: var(--texto-blanco);
+}
+
+.balance {
+    grid-column: span 2 / span 2;
+    grid-row: span 4 / span 4;
+    grid-column-start: 1;
+    grid-row-start: 2;
+    border-radius: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
+.balance-container {
+    color: var(--texto);
+    font-family: 'AtkinsonHyperlegibleMono';
+    font-size: 1.7rem;
+    background-color: var(--fondo-secundario);
+    border-radius: 2rem;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    margin: 0.5rem 0;
+    width: 100%;
+}
+
+.description {
+    color: var(--texto);
+    font-family: 'AtkinsonHyperlegibleMono';
+    font-size: xx-small;
+}
+
+.money {
+    color: var(--texto);
+    font-family: 'AtkinsonHyperlegibleMono';
+    font-size: 2rem;
+    margin: 0.5rem 0;
+}
+
+.flow {
+    grid-column: span 4 / span 4;
+    grid-row: span 3 / span 3;
+    grid-column-start: 3;
+    grid-row-start: 3;
+    background-color: var(--fondo-secundario);
+    border-radius: 2rem;
+    color: var(--texto);
+    font-family: 'AtkinsonHyperlegibleMono';
+    font-size: 1.7rem;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    margin: 0.5rem 0;
+    width: 100%;
+}
+
+.graph {
+    margin: 1rem
+}
+
+.transactions {
+    grid-column: span 3 / span 3;
+    grid-row: span 5 / span 5;
+    grid-column-start: 7;
+    grid-row-start: 1;
+    background-color: var(--fondo-secundario)
+    
 }
 </style>
