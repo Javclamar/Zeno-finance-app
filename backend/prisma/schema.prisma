@@ -14,12 +14,12 @@ datasource db {
 }
 
 model User {
-  id    Int    @id @default(autoincrement())
-  email String @unique
-  name  String
-  password String
-  money Decimal @default(0.00)
-  createdAt DateTime @default(now())
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  name         String
+  password     String
+  money        Decimal       @default(0.00)
+  createdAt    DateTime      @default(now())
   transactions Transaction[] @relation("UserTransactions")
 }
 
@@ -27,8 +27,18 @@ model Transaction {
   id          Int      @id @default(autoincrement())
   name        String
   description String
+  category    Category @default(OTHER)
   amount      Decimal
-  date   DateTime
+  date        DateTime
   userId      Int
   user        User     @relation("UserTransactions", fields: [userId], references: [id])
+}
+
+enum Category {
+  FOOD
+  TRANSPORT
+  ENTERTAINMENT
+  UTILITIES
+  HEALTH
+  OTHER
 }

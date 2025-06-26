@@ -1,17 +1,21 @@
-import cors from 'cors';
-import express from 'express';
-import authRoutes from './routes/authRoutes';
-import userRoutes from './routes/userRoutes';
+import cors from 'cors'
+import express from 'express'
+import authRoutes from './routes/authRoutes'
+import stockRoutes from './routes/stockRoutes'
+import userRoutes from './routes/userRoutes'
 
-const app = express();
+const app = express()
 
-app.use(cors({
+app.use(
+  cors({
     origin: 'http://localhost:5173',
-    credentials: true
-  }));
-app.use(express.json());
+    credentials: true,
+  }),
+)
+app.use(express.json())
 
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRoutes)
 app.use('/api/user', userRoutes)
+app.use('/api/stocks', stockRoutes)
 
-export default app;
+export default app

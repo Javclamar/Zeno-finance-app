@@ -18,12 +18,15 @@
   "dependencies": {
     "@prisma/client": "^6.9.0",
     "@types/dotenv": "^6.1.1",
+    "axios": "^1.10.0",
     "bcryptjs": "^3.0.2",
+    "cheerio": "^1.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "rm": "^0.1.8"
+    "rm": "^0.1.8",
+    "yahoo-finance2": "^2.13.3"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",

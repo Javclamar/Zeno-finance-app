@@ -29,7 +29,7 @@
   </header>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import '@/assets/css/main.css';
 import { useAuthStore } from '@/stores/auth';
 import gsap from 'gsap';

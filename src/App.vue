@@ -11,7 +11,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import '@/assets/css/main.css'
 import FooterComponent from '@/components/FooterComponent.vue'
 import HeaderComponent from '@/components/HeaderComponent.vue'
@@ -25,9 +25,13 @@ onMounted(() => {
   if (token) {
     try {
       const decoded = jwtDecode(token)
-      const exp = decoded.exp * 1000 // a ms
-      if (Date.now() < exp) {
-        estaAutenticado.value = true
+      if (decoded && typeof decoded.exp === 'number') {
+        const exp = decoded.exp * 1000 // a ms
+        if (Date.now() < exp) {
+          estaAutenticado.value = true
+        } else {
+          localStorage.removeItem('token')
+        }
       } else {
         localStorage.removeItem('token')
       }
