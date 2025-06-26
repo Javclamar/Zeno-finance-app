@@ -24,6 +24,7 @@
         <router-link to="/profile" style="color: var(--texto);">
           <font-awesome-icon icon="user" size="2x" style="fill: red;" />
         </router-link>
+        <button @click="handleLogout" class="logout-button">Logout</button>
       </nav>
     </div>
   </header>
@@ -31,19 +32,17 @@
 
 <script setup lang="ts">
 import '@/assets/css/main.css';
+import router from '@/router';
 import { useAuthStore } from '@/stores/auth';
-import gsap from 'gsap';
-import ScrollTrigger from 'gsap/src/ScrollTrigger';
-import { onMounted } from 'vue';
-
-gsap.registerPlugin(ScrollTrigger);
+import { storeToRefs } from 'pinia';
 
 const auth = useAuthStore();
-const isLoggedIn = auth.isLoggedIn;
+const { isLoggedIn } = storeToRefs(auth);
 
-onMounted(() => {
-  auth.loadTokenFromStorage();
-})
+function handleLogout() {
+  auth.logout();
+  router.push('/');
+}
 </script>
 
 <style scoped>
@@ -67,8 +66,8 @@ onMounted(() => {
 .right {
   flex: 1;
   display: flex;
-  justify-content: center;
   align-items: center;
+
 }
 
 .left {
@@ -174,5 +173,16 @@ onMounted(() => {
 
 .nav1 a.active {
   background-image: linear-gradient(144deg, #af40ff, #5b42f3 50%, #00ddeb);
+}
+
+.logout-button {
+  background-color: var(--fondo);
+  text-decoration: underline;
+  border: 0;
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  margin: 1rem;
 }
 </style>

@@ -287,7 +287,7 @@ onMounted(() => {
 .all-transactions {
   display: inline-block;
   padding: 0.5rem 1rem;
-  background-image: linear-gradient(144deg, #af40ff, #5b42f3 50%, #00ddeb);
+  background-image: linear-gradient(144deg, #274e55, #267272 50%, #6becf5c5);
   box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
   color: var(--texto-blanco);
   border-radius: 0.5rem;
@@ -311,12 +311,12 @@ onMounted(() => {
 }
 
 .income-button {
-  background-image: linear-gradient(144deg, #5390d9, #06d6a0 50%, #1b9aaa);
-  box-shadow: rgb(23, 61, 26) 0 15px 30px -5px;
+  background-image: linear-gradient(144deg, #133034, #1b4332 50%, #2d6a4f);
+  box-shadow: rgb(27, 43, 28) 0 15px 30px -5px;
 }
 
 .expense-button {
-  background-image: linear-gradient(144deg, #ffadad, #ff6f61 50%, #ff6b6b);
+  background-image: linear-gradient(144deg, #2c1620, #642527 50%, #b94f41);
   box-shadow: rgba(73, 26, 26, 0.747) 0 15px 30px -5px;
 }
 

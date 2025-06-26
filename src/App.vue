@@ -12,34 +12,11 @@
 </template>
 
 <script setup lang="ts">
-import '@/assets/css/main.css'
-import FooterComponent from '@/components/FooterComponent.vue'
-import HeaderComponent from '@/components/HeaderComponent.vue'
-import { jwtDecode } from 'jwt-decode'
-import { onMounted, ref } from 'vue'
+import '@/assets/css/main.css';
+import FooterComponent from '@/components/FooterComponent.vue';
+import HeaderComponent from '@/components/HeaderComponent.vue';
 
-const estaAutenticado = ref(false)
 
-onMounted(() => {
-  const token = localStorage.getItem('token')
-  if (token) {
-    try {
-      const decoded = jwtDecode(token)
-      if (decoded && typeof decoded.exp === 'number') {
-        const exp = decoded.exp * 1000 // a ms
-        if (Date.now() < exp) {
-          estaAutenticado.value = true
-        } else {
-          localStorage.removeItem('token')
-        }
-      } else {
-        localStorage.removeItem('token')
-      }
-    } catch {
-      localStorage.removeItem('token')
-    }
-  }
-})
 </script>
 
 <style>
