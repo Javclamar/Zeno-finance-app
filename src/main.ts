@@ -9,6 +9,7 @@ import {
   faArrowUp,
   faGear,
   faHome,
+  faMagnifyingGlass,
   faUser,
   faWallet,
 } from '@fortawesome/free-solid-svg-icons'
@@ -17,7 +18,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import App from './App.vue'
 import router from './router'
 
-library.add(faUser, faHome, faGear, faWallet, faArrowUp, faArrowDown)
+library.add(faUser, faHome, faGear, faWallet, faArrowUp, faArrowDown, faMagnifyingGlass)
 const app = createApp(App)
 const pinia = createPinia()
 
