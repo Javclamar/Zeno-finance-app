@@ -1,19 +1,5 @@
 <template>
   <div class="dashboard">
-    <div class='dashboard-sidebar'>
-      <div class='icon'><router-link to="/dashboard" class='texto-blanco'>
-          <font-awesome-icon icon="house" />
-        </router-link></div>
-      <div class='icon'><router-link to="/profile" class='texto-blanco'>
-          <font-awesome-icon icon="user" />
-        </router-link></div>
-      <div class='icon'><router-link to="/transactions" class='texto-blanco'>
-          <font-awesome-icon icon="wallet" />
-        </router-link></div>
-      <div class='icon'><router-link to="/settings" class='texto-blanco'>
-          <font-awesome-icon icon="gear" />
-        </router-link></div>
-    </div>
     <div class="dashboard-content">
       <div class='title'>Welcome {{ user.name }}</div>
       <div class='balance'>
@@ -130,6 +116,15 @@ const fetchUserData = async () => {
 
 onMounted(() => {
   fetchUserData();
+  
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+
+  if (token) {
+    localStorage.setItem('token', token);
+    window.history.replaceState({}, '', '/dashboard');
+  }
+
 });
 </script>
 
@@ -139,35 +134,7 @@ onMounted(() => {
   min-height: 100vh;
   font-family: 'AtkinsonHyperlegibleMono';
   min-width: 100%;
-  margin-top: 2rem;
-}
-
-.dashboard-sidebar {
-  position: fixed;
-  bottom: 3%;
-  left: 0;
-  width: 3rem;
-  height: 87vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 1.5rem;
-  gap: 1.5rem;
-  justify-content: space-around;
-  margin-left: 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--texto);
-  box-shadow: #dee2e6 0.2rem 0.1rem 1.5rem -0.3rem;
-}
-
-.dashboard-sidebar .icon {
-  font-size: 1.4rem;
-  color: var(--texto);
-  transition: transform 0.2s;
-}
-
-.dashboard-sidebar .icon:hover {
-  transform: scale(1.2);
+  margin-top: 3rem;
 }
 
 .dashboard-content {
@@ -201,17 +168,17 @@ onMounted(() => {
   border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   color: #fff;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .balance-container .description {
-  font-size: 0.85rem;
+  font-size: 0.7rem;
   color: var(--texto);
   margin-top: 0.3rem;
 }
 
 .balance-container .money {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: bold;
 }
 
@@ -224,8 +191,7 @@ onMounted(() => {
 
 .flow {
   flex: 1.2;
-  margin-bottom: 2rem;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   color: #fff;
   font-weight: 700;
 }
@@ -234,13 +200,13 @@ onMounted(() => {
   margin-top: 1rem;
   background-color: var(--fondo-secundario);
   border-radius: 0.5rem;
-  padding: 1rem;
+  padding: 0.5rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .transactions {
   flex: 0.8;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   color: #fff;
   font-weight: 700;
   border-radius: 0.5rem;
@@ -258,19 +224,20 @@ onMounted(() => {
 
 .transaction-title {
   font-weight: bold;
-  color: var(--texto);
+  color: #FFF;
+  font-size: 1.2rem;
   flex: auto;
   margin-left: 1rem;
 }
 
 .transaction-description {
   font-size: 0.85rem;
-  color: var(--texto-blanco);
+  color: var(--texto);
 }
 
 .transaction-amount {
   color: var(--texto-blanco);
-  font-size: 700;
+  font-size: 1.2rem;
   text-align: right;
   margin: 1rem;
   flex: auto;
@@ -286,28 +253,27 @@ onMounted(() => {
 
 .all-transactions {
   display: inline-block;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem;
   background-image: linear-gradient(144deg, #274e55, #267272 50%, #6becf5c5);
   box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
   color: var(--texto-blanco);
   border-radius: 0.5rem;
   text-decoration: none;
   transition: background-color 0.2s;
-  margin-top: 1rem;
-  margin-right: 1rem;
+  margin: 1rem;
+  font-size: 1rem;
 }
 
 .income-button,
 .expense-button {
   display: inline-block;
   padding: 0.5rem 1rem;
-  box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
   color: var(--texto-blanco);
   border-radius: 0.5rem;
   text-decoration: none;
   transition: background-color 0.2s;
-  margin-top: 1rem;
-  margin-right: 1rem;
+  margin: 1rem;
+  font-size: 1rem;
 }
 
 .income-button {
@@ -321,12 +287,7 @@ onMounted(() => {
 }
 
 .income-button:hover,
-.expense-button:hover {
-  outline: 0;
-  transform: scale(1.05);
-  transition: transform 0.2s ease-in-out;
-}
-
+.expense-button:hover,
 .all-transactions:hover {
   outline: 0;
   transform: scale(1.05);

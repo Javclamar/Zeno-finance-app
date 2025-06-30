@@ -15,8 +15,6 @@
 import '@/assets/css/main.css';
 import FooterComponent from '@/components/FooterComponent.vue';
 import HeaderComponent from '@/components/HeaderComponent.vue';
-
-
 </script>
 
 <style>
@@ -34,7 +32,6 @@ import HeaderComponent from '@/components/HeaderComponent.vue';
   flex: 1;
   padding: 1rem;
   width: 100%;
-  margin-bottom: 2rem;
   background-color: var(--fondo);
   align-items: center;
   height: fit-content;

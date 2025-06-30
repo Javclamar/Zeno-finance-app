@@ -34,7 +34,6 @@ export async function getMoneyByUser(userId: number) {
 
 export async function searchTransactionsByUser(userId: number, searchTerm: string) {
   const isValidCategory = Object.values(Category).includes(searchTerm as Category)
-  console.log(`Searching transactions for user ${userId} with term "${searchTerm}"`)
   try {
     const transactions = await prisma.transaction.findMany({
       where: {

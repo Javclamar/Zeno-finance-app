@@ -2,10 +2,10 @@
 <template>
   <header class="header">
     <div class="left">
-      <img src="@/assets/images/logo.svg" alt="Logo" class="logo" />
+      <img src="@/assets/images/logo.svg" alt="Zave" class="logo" />
     </div>
     <div class="center">
-      <nav>
+      <nav role="navigation" aria-label="Main navigation">
         <ul class="nav1">
           <li><router-link to="/">Home</router-link></li>
           <li><router-link to="/dashboard">Dashboard</router-link></li>
@@ -14,13 +14,13 @@
       </nav>
     </div>
     <div class="right">
-      <nav v-if="!isLoggedIn">
+      <nav role="navigation" aria-label="Main navigation" v-if="!isLoggedIn">
         <ul class="nav2">
           <li class="login-link"><router-link to="/login" class="texto">Login</router-link></li>
           <li class="signup-link"><router-link to="/register" class="texto-blanco">Sign Up</router-link></li>
         </ul>
       </nav>
-      <nav v-else>
+      <nav role="navigation" aria-label="Main navigation" v-else>
         <router-link to="/profile" style="color: var(--texto);">
           <font-awesome-icon icon="user" size="2x" style="fill: red;" />
         </router-link>
@@ -49,14 +49,10 @@ function handleLogout() {
 .header {
   position: fixed;
   left: 0;
-  z-index: 1000;
-  height: 80px;
   width: 100%;
-  background-color: var(--fondo);
-  padding: 1rem;
+  background-color: #212529;
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   justify-content: space-between;
   gap: 3rem;
 }
@@ -72,15 +68,16 @@ function handleLogout() {
 
 .left {
   justify-content: flex-start;
+  padding: 0.5rem;
 }
 
 .right {
   justify-content: flex-end;
+  padding: 0.5rem;
 }
 
 .logo {
-  height: auto;
-  width: 40px;
+  width: 2.5rem;
   max-width: 100%;
 }
 
@@ -90,12 +87,10 @@ function handleLogout() {
   display: flex;
   gap: 2rem;
   border-radius: 1rem;
-  padding: 0.5rem;
 }
 
 .nav1 {
-  background-color: var(--fondo-secundario);
-  gap: 10rem
+  justify-content: space-between;
 }
 
 

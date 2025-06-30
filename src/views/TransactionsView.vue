@@ -14,6 +14,7 @@
         <div class="transaction-title">
           {{ tx.name }}
           <div class="transaction-description">{{ tx.description }}</div>
+          <div class="transaction-date"> {{ tx.date.split('T')[0] }}</div>
         </div>
         <div class="transaction-amount">
           <font-awesome-icon :icon="tx.amount >= 0 ? 'arrow-up' : 'arrow-down'"
@@ -44,7 +45,7 @@ interface MyJwtPayload {
 }
 
 const user = jwtDecode<MyJwtPayload>(token);
-const transactions = ref<Array<{ name: string, description: string, amount: number, category: keyof typeof categoryIcons }>>([]);
+const transactions = ref<Array<{ name: string, description: string, amount: number, category: keyof typeof categoryIcons, date: string }>>([]);
 
 const categoryIcons = {
   FOOD: '🍔',
@@ -90,12 +91,13 @@ onMounted(() => {
 
 <style scoped>
 .all-transactions {
-  max-width: 80%;
-  min-width: 50%;
+  max-width: 70%;
+  min-width: 40%;
   flex: 1;
   flex-direction: column;
   padding: 2rem;
   margin: 3rem auto;
+  margin-bottom: 1rem;
   font-family: 'AtkinsonHyperlegibleMono';
 }
 
@@ -145,7 +147,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  min-width: 50%;
+  min-width: 40%;
 }
 
 .transaction {

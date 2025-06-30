@@ -1,12 +1,12 @@
-import DashboardView from '@/views/DashboardView.vue';
-import LandingView from '@/views/LandingView.vue';
-import LoginView from '@/views/LoginView.vue';
-import RegisterView from '@/views/RegisterView.vue';
-import SettingsView from '@/views/SettingsView.vue';
-import TransactionsView from '@/views/TransactionsView.vue';
+import DashboardView from '@/views/DashboardView.vue'
+import LandingView from '@/views/LandingView.vue'
+import LoginView from '@/views/LoginView.vue'
+import RegisterView from '@/views/RegisterView.vue'
+import SettingsView from '@/views/SettingsView.vue'
+import TransactionsView from '@/views/TransactionsView.vue'
 
-import { createRouter, createWebHistory } from 'vue-router';
-
+import { useAuthStore } from '@/stores/auth'
+import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,49 +20,56 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView,
-      meta: { guestsOnly: true }
+      meta: { guestsOnly: true },
     },
     {
       path: '/register',
       name: 'register',
       component: RegisterView,
-      meta: { guestsOnly: true }
+      meta: { guestsOnly: true },
     },
     {
       path: '/dashboard',
       name: 'dashboard',
       component: DashboardView,
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true },
     },
     {
       path: '/transactions',
       name: 'transactions',
       component: TransactionsView,
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true },
     },
     {
       path: '/settings',
       name: 'settings',
       component: SettingsView,
-      meta: { requiresAuth: true }
-    }
-
+      meta: { requiresAuth: true },
+    },
   ],
 })
 
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem('token'); // o usar Vuex/Pinia
+  const authStore = useAuthStore()
 
-  if (to.meta.guestsOnly && isAuthenticated) {
-    return next('/dashboard');
+  if (!authStore.isLoggedIn) {
+    const token = new URLSearchParams(window.location.search).get('token')
+    if (token) {
+      localStorage.setItem('token', token)
+      authStore.setLoggedIn(true)
+      window.history.replaceState({}, '', to.path)
+    }
   }
 
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    return next('/login');
+  if (to.meta.guestsOnly && authStore.isLoggedIn) {
+    return next('/dashboard')
   }
 
-  next();
-});
+  if (to.meta.requiresAuth && !authStore.isLoggedIn) {
+    return next('/login')
+  }
 
+  next()
+})
 
 export default router

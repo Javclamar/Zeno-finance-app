@@ -8,12 +8,15 @@
         <label for="password">Password:</label>
         <input type="password" id="password" v-model="password" required />
       </div>
-      <button type="submit">Sign In</button>
+      <button class="login" type="submit">Sign In</button>
       <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
       <p v-if="successMessage" class="success">{{ successMessage }}</p>
     </form>
-    <div class="message">Don't have an account yet? <router-link to="/register" class="link">Sign Up</router-link>
-    </div>
+    <div class="message">Don't have an account yet? <router-link to="/register" class="link">Sign Up</router-link></div>
+
+    <button class='google' @click="loginWithGoogle">
+      <img src="@/assets/images/google.png" alt="Google Icon">
+    </button>
   </div>
 </template>
 
@@ -66,6 +69,17 @@ const handleLogin = async () => {
     }
   }
 };
+
+const loginWithGoogle = async () => {
+  const clientId = "1075293173356-sq9qb0j70q44n1pc990qs807rajjf0fv.apps.googleusercontent.com";
+  const redirectUri = 'http://localhost:3000/api/auth/google/callback';
+  const scope = 'email profile';
+  const responseType = 'code';
+  const state = crypto.randomUUID();
+
+  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=${responseType}&scope=${scope}&state=${state}`;
+  window.location.href = authUrl;
+};
 </script>
 
 <style scoped>
@@ -77,6 +91,8 @@ const handleLogin = async () => {
   background-color: var(--fondo-secundario);
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
 }
 
 .title {
@@ -116,7 +132,7 @@ const handleLogin = async () => {
   border-color: rgba(167, 139, 250);
 }
 
-button {
+.login {
   display: block;
   width: 100%;
   background-image: linear-gradient(144deg, #af40ff, #5b42f3 50%, #00ddeb);
@@ -167,5 +183,16 @@ button:hover {
   margin-top: 1rem;
   font-weight: bold;
   font-family: 'AtkinsonHyperlegibleMono';
+}
+
+.google {
+  background-color: var(--fondo);
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
 }
 </style>

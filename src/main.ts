@@ -5,6 +5,7 @@ import { createApp } from 'vue'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
+
   faArrowDown,
   faArrowUp,
   faGear,
@@ -12,6 +13,7 @@ import {
   faMagnifyingGlass,
   faUser,
   faWallet,
+
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
