@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import '@/assets/css/main.css';
 import router from '@/router';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/stores/authStore';
 import { storeToRefs } from 'pinia';
 
 const auth = useAuthStore();
@@ -55,6 +55,7 @@ function handleLogout() {
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 3rem;
+  z-index: 1000;
 }
 
 .left,

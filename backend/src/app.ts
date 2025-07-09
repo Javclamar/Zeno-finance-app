@@ -1,9 +1,9 @@
 import cors from 'cors'
+import dotenv from 'dotenv'
 import express from 'express'
 import authRoutes from './routes/authRoutes'
-import stockRoutes from './routes/stockRoutes'
+import transactionsRoutes from './routes/transactionRoutes'
 import userRoutes from './routes/userRoutes'
-import dotenv from 'dotenv'
 
 const app = express()
 
@@ -17,8 +17,8 @@ app.use(express.json())
 
 app.use('/api/auth', authRoutes)
 app.use('/api/user', userRoutes)
-app.use('/api/stocks', stockRoutes)
+app.use('/api/transactions', transactionsRoutes)
 
-dotenv.config();
+dotenv.config()
 
 export default app

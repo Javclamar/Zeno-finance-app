@@ -44,6 +44,9 @@ export async function searchTransactionsByUser(userId: number, searchTerm: strin
           ...(isValidCategory ? [{ category: searchTerm.trim() as Category }] : []),
         ],
       },
+      orderBy: {
+        date: 'desc',
+      },
     })
     return transactions
   } catch (error) {

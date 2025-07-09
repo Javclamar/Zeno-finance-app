@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/stores/authStore';
 import axios from 'axios';
 import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
@@ -44,7 +44,6 @@ const handleLogin = async () => {
       email: email.value,
       password: password.value
     });
-    console.log('Login response:', response.data);
 
     if (response.data.token) {
       auth.login(response.data.token);
@@ -89,7 +88,7 @@ const loginWithGoogle = async () => {
   margin: 0 auto;
   padding: 2rem;
   background-color: var(--fondo-secundario);
-  border-radius: 10px;
+  border-radius: 0.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;

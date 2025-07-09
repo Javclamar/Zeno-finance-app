@@ -1,11 +1,13 @@
 import DashboardView from '@/views/DashboardView.vue'
 import LandingView from '@/views/LandingView.vue'
 import LoginView from '@/views/LoginView.vue'
+import NewExpenseView from '@/views/NewExpenseView.vue'
+import NewIncomeView from '@/views/NewIncomeView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import SettingsView from '@/views/SettingsView.vue'
 import TransactionsView from '@/views/TransactionsView.vue'
 
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '@/stores/authStore'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -44,6 +46,18 @@ const router = createRouter({
       path: '/settings',
       name: 'settings',
       component: SettingsView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/transactions/new/income',
+      name: 'new-income',
+      component: NewIncomeView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/transactions/new/expense',
+      name: 'new-income',
+      component: NewExpenseView,
       meta: { requiresAuth: true },
     },
   ],

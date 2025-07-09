@@ -54,9 +54,16 @@ export const loginUserService = async (email: string, password: string) => {
     throw new Error('Invalid password')
   }
 
-  const token = jwt.sign({ id: user.id, email: user.email, name: user.name }, 'clave-secreta', {
-    expiresIn: '1h',
-  })
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET environment variable is not set')
+  }
+  const token = jwt.sign(
+    { id: user.id, email: user.email, name: user.name },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: '5h',
+    },
+  )
 
   return token
 }
@@ -121,9 +128,16 @@ export const exchangeGoogleCodeForToken = async (code: string) => {
     })
   }
 
-  const token = jwt.sign({ id: user.id, email: user.email, name: user.name }, 'clave-secreta', {
-    expiresIn: '1h',
-  })
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET environment variable is not set')
+  }
+  const token = jwt.sign(
+    { id: user.id, email: user.email, name: user.name },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: '5h',
+    },
+  )
 
   return token
 }

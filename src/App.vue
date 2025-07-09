@@ -15,6 +15,10 @@
 import '@/assets/css/main.css';
 import FooterComponent from '@/components/FooterComponent.vue';
 import HeaderComponent from '@/components/HeaderComponent.vue';
+import { useAuthStore } from '@/stores/authStore';
+
+const authStore = useAuthStore();
+authStore.checkTokenValidity();
 </script>
 
 <style>

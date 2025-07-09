@@ -19,7 +19,7 @@ model User {
   name         String
   password     String?
   googleId     String?       @unique
-  provider      String?      @default("local")
+  provider     String?       @default("local")
   money        Decimal       @default(0.00)
   createdAt    DateTime      @default(now())
   transactions Transaction[] @relation("UserTransactions")
@@ -42,5 +42,6 @@ enum Category {
   ENTERTAINMENT
   UTILITIES
   HEALTH
+  SALARY
   OTHER
 }
