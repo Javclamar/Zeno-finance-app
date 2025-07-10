@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -15,7 +14,34 @@ datasource db {
 }
 
 model User {
-  id    Int    @id @default(autoincrement())
-  email String @unique
-  name  String
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  name         String
+  password     String?
+  googleId     String?       @unique
+  provider     String?       @default("local")
+  money        Decimal       @default(0.00)
+  createdAt    DateTime      @default(now())
+  transactions Transaction[] @relation("UserTransactions")
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  category    Category @default(OTHER)
+  amount      Decimal
+  date        DateTime
+  userId      Int
+  user        User     @relation("UserTransactions", fields: [userId], references: [id])
+}
+
+enum Category {
+  FOOD
+  TRANSPORT
+  ENTERTAINMENT
+  UTILITIES
+  HEALTH
+  SALARY
+  OTHER
 }

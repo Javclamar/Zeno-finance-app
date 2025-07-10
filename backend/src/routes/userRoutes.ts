@@ -1,8 +1,14 @@
-import { Router } from 'express';
-import { getUsers } from '../controllers/userController';
+import { Router } from 'express'
+import {
+  getUserMoney,
+  getUserTransactions,
+  searchUserTransactions,
+} from '../controllers/userController'
 
-const router = Router();
+const router = Router()
 
-router.get('/', getUsers);
+router.get('/transactions', getUserTransactions)
+router.get('/money', getUserMoney)
+router.get('/transactions/search', searchUserTransactions)
 
-export default router;
+export default router
