@@ -7,12 +7,12 @@ Desarrollada con **Vue.js**, **Node.js**, **Prisma** y autenticación mediante *
 
 ## 🚀 Funcionalidades principales
 
-✅ Registro y login seguro con OAuth (por ejemplo Google, GitHub, etc.)  
+✅ Registro y login seguro con OAuth (por ejemplo Google)  
 ✅ Crear, editar y eliminar transacciones de tipo *income* (ingreso) o *expense* (gasto)  
 ✅ Visualización de transacciones ordenadas por fecha o importe  
 ✅ Dashboard intuitivo para ver el flujo de tus finanzas  
 ✅ Datos protegidos mediante tokens JWT y control de expiración automática  
-✅ Backend robusto con Node.js + Express y base de datos gestionada por Prisma
+✅ Backend robusto con Node.js + Express y base de datos PostgreSQL gestionada por Prisma
 
 ---
 
@@ -31,5 +31,5 @@ Desarrollada con **Vue.js**, **Node.js**, **Prisma** y autenticación mediante *
 
 1. Clona el repositorio:
 ```bash
-git clone https://github.com/tuusuario/finance-tracker.git
-cd finance-tracker
+git clone https://github.com/Javclamar/Zave-finance-app.git
+cd Zave-finance-app
