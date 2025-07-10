@@ -1,22 +1,23 @@
 # 💰 Personal Finance Tracker
 
-Aplicación web full-stack para gestionar ingresos y gastos de forma sencilla y segura.  
-Desarrollada con **Vue.js**, **Node.js**, **Prisma** y autenticación mediante **OAuth**.
+
+Developed with Vue.js, Express.js and PostgreSQL connected through Prisma
 
 ---
 
-## 🚀 Funcionalidades principales
+## 🚀 Functionalities
 
-✅ Registro y login seguro con OAuth (por ejemplo Google)  
-✅ Crear, editar y eliminar transacciones de tipo *income* (ingreso) o *expense* (gasto)  
-✅ Visualización de transacciones ordenadas por fecha o importe  
-✅ Dashboard intuitivo para ver el flujo de tus finanzas  
-✅ Datos protegidos mediante tokens JWT y control de expiración automática  
-✅ Backend robusto con Node.js + Express y base de datos PostgreSQL gestionada por Prisma
+✅ Login and Signup with Oauth (for example Google)
+✅ Create new transactions, like incomes and expenses
+✅ Clear visualization of transactions sorted by date or amount 
+✅ Intuitive dashboard to show the flow of your balance
+✅ JWT security token for authorization and authentication  
+✅ Backend made with Node.js + Express and Prisma to connect the PostgreSQL database
+✅ Frontend made with Vue.js and Pinia for global context
 
 ---
 
-## 🛠 Tecnologías utilizadas
+## 🛠 Technologies used
 
 - ![Vue.js](https://img.shields.io/badge/-Vue.js-4FC08D?style=flat-square&logo=vue.js)
 - ![Node.js](https://img.shields.io/badge/-Node.js-333333?style=flat-square&logo=node.js)
@@ -29,7 +30,11 @@ Desarrollada con **Vue.js**, **Node.js**, **Prisma** y autenticación mediante *
 
 ## 📦 Instalación y uso
 
-1. Clona el repositorio:
+1. Clone the repository
 ```bash
 git clone https://github.com/Javclamar/Zave-finance-app.git
 cd Zave-finance-app
+````
+1. Start the frontenbd
+```bash
+npm run dev
