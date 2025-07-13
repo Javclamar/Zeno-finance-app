@@ -30,11 +30,19 @@ Developed with Vue.js, Express.js and PostgreSQL connected through Prisma
 
 ## 📦 Instalación y uso
 
+Frontend on port 5173  
+Backend on port 3000
+
 1. Clone the repository
 ```bash
 git clone https://github.com/Javclamar/Zave-finance-app.git
 cd Zave-finance-app
 ````
-1. Start the frontenbd
+2. Start the frontend
 ```bash
+npm run dev
+```
+2. Start the backend
+```bash
+cd backend
 npm run dev
