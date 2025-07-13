@@ -20,7 +20,7 @@ Developed with Vue.js, Express.js and PostgreSQL connected through Prisma
 ## 🛠 Technologies used
 
 - ![Vue.js](https://img.shields.io/badge/-Vue.js-4FC08D?style=flat-square&logo=vue.js)
-- ![Node.js](https://img.shields.io/badge/-Node.js-333333?style=flat-square&logo=node.js)
+- ![Node.js](https://img.shields.io/badge/-Express.js-333333?style=flat-square&logo=node.js)
 - ![Prisma](https://img.shields.io/badge/-Prisma-3982CE?style=flat-square&logo=prisma)
 - ![OAuth](https://img.shields.io/badge/-OAuth2-00A1E5?style=flat-square&logo=oauth)
 - ![JWT](https://img.shields.io/badge/-JWT-black?style=flat-square&logo=json-web-tokens)
@@ -42,7 +42,7 @@ cd Zave-finance-app
 ```bash
 npm run dev
 ```
-2. Start the backend
+3. Start the backend
 ```bash
 cd backend
 npm run dev
