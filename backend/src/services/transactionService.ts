@@ -1,6 +1,8 @@
 import { Category, PrismaClient } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
 
+const prisma = new PrismaClient()
+
 export async function createTransactionService(
   userId: number,
   name: string,
@@ -9,7 +11,6 @@ export async function createTransactionService(
   amount: Decimal,
   date: Date,
 ) {
-  const prisma = new PrismaClient()
   try {
     const transaction = await prisma.transaction.create({
       data: {
@@ -32,6 +33,84 @@ export async function createTransactionService(
     return transaction
   } catch (error) {
     throw new Error(`Error creating income transaction: ${error}`)
+  } finally {
+    await prisma.$disconnect()
+  }
+}
+
+export async function getDashboardTransactionsByUser(userId: number) {
+  try {
+    const transactions = await prisma.transaction.findMany({
+      where: { userId },
+      orderBy: { date: 'desc' },
+      take: 5,
+    })
+    return transactions
+  } catch (error) {
+    throw new Error(`Error fetching dashboard transactions: ${error}`)
+  } finally {
+    await prisma.$disconnect()
+  }
+}
+
+export async function getMonthlyTransactionsByUser(userId: number) {
+  try {
+    const transactions = await prisma.transaction.findMany({
+      where: {
+        userId,
+        date: {
+          gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+          lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1),
+        },
+      },
+      orderBy: { date: 'desc' },
+    })
+    return transactions
+  } catch (error) {
+    throw new Error(`Error fetching monthly transactions: ${error}`)
+  } finally {
+    await prisma.$disconnect()
+  }
+}
+
+export async function searchTransactionsByUser(userId: number, searchTerm: string) {
+  const isValidCategory = Object.values(Category).includes(searchTerm as Category)
+  try {
+    const transactions = await prisma.transaction.findMany({
+      where: {
+        userId: userId,
+        OR: [
+          { description: { contains: searchTerm.trim(), mode: 'insensitive' } },
+          { name: { contains: searchTerm.trim(), mode: 'insensitive' } },
+          ...(isValidCategory ? [{ category: searchTerm.trim() as Category }] : []),
+        ],
+      },
+      orderBy: {
+        date: 'desc',
+      },
+    })
+
+    return transactions
+  } catch (error) {
+    throw new Error(`Error searching transactions: ${error}`)
+  }
+}
+
+export async function getPaginatedTransactionsByUser(
+  userId: number,
+  page: number,
+  pageSize: number,
+) {
+  try {
+    const transactions = await prisma.transaction.findMany({
+      where: { userId },
+      orderBy: { date: 'desc' },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    })
+    return transactions
+  } catch (error) {
+    throw new Error(`Error fetching paginated transactions: ${error}`)
   } finally {
     await prisma.$disconnect()
   }
