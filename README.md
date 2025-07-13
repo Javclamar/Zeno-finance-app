@@ -7,13 +7,13 @@ Developed with Vue.js, Express.js and PostgreSQL connected through Prisma
 
 ## 🚀 Functionalities
 
-✅ Login and Signup with Oauth (for example Google)
-✅ Create new transactions, like incomes and expenses
-✅ Clear visualization of transactions sorted by date or amount 
-✅ Intuitive dashboard to show the flow of your balance
+✅ Login and Signup with Oauth (for example Google)  
+✅ Create new transactions, like incomes and expenses  
+✅ Clear visualization of transactions sorted by date or amount  
+✅ Intuitive dashboard to show the flow of your balance  
 ✅ JWT security token for authorization and authentication  
-✅ Backend made with Node.js + Express and Prisma to connect the PostgreSQL database
-✅ Frontend made with Vue.js and Pinia for global context
+✅ Backend made with Node.js + Express and Prisma to connect the PostgreSQL database  
+✅ Frontend made with Vue.js and Pinia for global context  
 
 ---
 
