@@ -7,9 +7,9 @@
     <div class="center">
       <nav role="navigation" aria-label="Main navigation">
         <ul class="nav1">
-          <li><router-link to="/">Home</router-link></li>
           <li><router-link to="/dashboard">Dashboard</router-link></li>
-          <li><router-link to="/contact">Contact</router-link></li>
+          <li><router-link to="/transactions">Transactions</router-link></li>
+          <li><router-link to="/budgets">Budgets</router-link></li>
         </ul>
       </nav>
     </div>

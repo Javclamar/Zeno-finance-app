@@ -23,7 +23,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import axios from 'axios';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -58,7 +58,11 @@ const handleregister = async () => {
         }, 2000);
     } catch (error) {
         console.error('Error during register:', error);
-        errorMessage.value = error.response?.data?.error || 'An error occurred during registration.';
+        if (axios.isAxiosError(error)) {
+            errorMessage.value = error.response?.data?.error || 'An error occurred during registration.';
+        } else {
+            errorMessage.value = 'An error occurred during registration.';
+        }
     }
 };
 </script>

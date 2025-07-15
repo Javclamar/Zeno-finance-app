@@ -1,5 +1,5 @@
+import BudgetView from '@/views/BudgetView.vue'
 import DashboardView from '@/views/DashboardView.vue'
-import LandingView from '@/views/LandingView.vue'
 import LoginView from '@/views/LoginView.vue'
 import NewExpenseView from '@/views/NewExpenseView.vue'
 import NewIncomeView from '@/views/NewIncomeView.vue'
@@ -13,11 +13,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: LandingView,
-    },
     {
       path: '/login',
       name: 'login',
@@ -43,6 +38,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/budgets',
+      name: 'budgets',
+      component: BudgetView,
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/settings',
       name: 'settings',
       component: SettingsView,
@@ -56,7 +57,7 @@ const router = createRouter({
     },
     {
       path: '/transactions/new/expense',
-      name: 'new-income',
+      name: 'new-expense',
       component: NewExpenseView,
       meta: { requiresAuth: true },
     },
