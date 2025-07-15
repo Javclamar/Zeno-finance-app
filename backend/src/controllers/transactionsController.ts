@@ -6,6 +6,8 @@ import {
   getMonthlyTransactionsByUser,
   getPaginatedTransactionsByUser,
   searchTransactionsByUser,
+  getMonthlyIncomeByUser,
+  getMonthlySpendingByUser
 } from '../services/transactionService'
 
 export const newTransactionController = async (req: Request, res: Response) => {
@@ -106,6 +108,44 @@ export const getPaginatedUserTransactionsController = async (req: Request, res: 
   try {
     const transactions = await getPaginatedTransactionsByUser(userId, page, pageSize)
     res.status(200).json(transactions)
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message })
+    } else {
+      res.status(400).json({ error: 'An unknown error occurred' })
+    }
+  }
+}
+
+export const getMonthlyIncomeByUserController = async (req: Request, res: Response) => {
+  const userId = req.user?.id as unknown as number
+
+  if (!userId) {
+    res.status(401).json({ error: 'Unauthorized: User not found' })
+  }
+
+  try {
+    const monthlyIncome = await getMonthlyIncomeByUser(userId)
+    res.status(200).json({ monthlyIncome })
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message })
+    } else {
+      res.status(400).json({ error: 'An unknown error occurred' })
+    }
+  }
+}
+
+export const getMonthlySpendingByUserController = async (req: Request, res: Response) => {
+  const userId = req.user?.id as unknown as number
+
+  if (!userId) {
+    res.status(401).json({ error: 'Unauthorized: User not found' })
+  }
+
+  try {
+    const monthlySpending = await getMonthlySpendingByUser(userId)
+    res.status(200).json({ monthlySpending })
   } catch (error) {
     if (error instanceof Error) {
       res.status(400).json({ error: error.message })

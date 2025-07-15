@@ -9,11 +9,11 @@
         </div>
         <div class='balance-container'> Income
           <div class='description'> Your income this month</div>
-          <div class='money'> {{ money }}$</div>
+          <div class='money'> {{ income }}$</div>
         </div>
         <div class='balance-container'> Spending
           <div class='description'> Your spendings this month</div>
-          <div class='money'> {{ money }}$</div>
+          <div class='money'> {{ spending }}$</div>
         </div>
       </div>
 
@@ -70,7 +70,10 @@ interface MyJwtPayload {
 
 const user = jwtDecode<MyJwtPayload>(token);
 const money = ref(null);
+const income = ref(null);
+const spending = ref(null);
 const transactions = ref<Array<{ name: string, description: string, amount: number, date: string, category: keyof typeof categoryIcons }>>([]);
+
 
 const categoryIcons = {
   FOOD: '🍔',
@@ -92,7 +95,6 @@ const fetchUserTransactions = async () => {
     }
     );
     transactions.value = await response.data;
-    console.log('Transactions fetched:', transactions.value);
   } catch (error) {
     console.error('Error fetching user transactions:', error);
   }
@@ -113,9 +115,39 @@ const fetchUserMoney = async () => {
   }
 };
 
+const fetchUserMontlhyIncome = async () => {
+  try {
+    const response = await axios.get('/api/transactions/monthly-income', {
+      params: { id: user.id },
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    income.value = await response.data.monthlyIncome;
+  } catch (error) {
+    console.error('Error fetching user monthly income:', error);
+  }
+}
+
+const fetchUserMontlhySpending = async () => {
+  try {
+    const response = await axios.get('/api/transactions/monthly-spending', {
+      params: { id: user.id },
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    spending.value = await response.data.monthlySpending;
+  } catch (error) {
+    console.error('Error fetching user monthly spending:', error);
+  }
+}
+
 const fetchUserData = async () => {
   await fetchUserTransactions();
   await fetchUserMoney();
+  await fetchUserMontlhyIncome();
+  await fetchUserMontlhySpending();
 };
 
 onMounted(() => {
@@ -127,7 +159,6 @@ onMounted(() => {
   if (token) {
     localStorage.setItem('token', token);
     window.history.replaceState({}, '', '/dashboard');
-    console.log('Token guardado:', token);
   }
 
 });

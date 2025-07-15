@@ -115,3 +115,55 @@ export async function getPaginatedTransactionsByUser(
     await prisma.$disconnect()
   }
 }
+
+export async function getMonthlyIncomeByUser(userId: number) {
+  try {
+    const transactions = await prisma.transaction.findMany({
+      where: {
+        userId,
+        amount: {
+          gt: new Decimal(0),
+        },
+        date: {
+          gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+          lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1),
+        },
+      },
+    })
+    const totalIncome = transactions.reduce(
+      (sum, transaction) => sum.add(transaction.amount),
+      new Decimal(0),
+    )
+    return totalIncome
+  } catch (error) {
+    throw new Error(`Error fetching monthly income: ${error}`)
+  } finally {
+    await prisma.$disconnect()
+  }
+}
+
+export async function getMonthlySpendingByUser(userId: number) {
+  try {
+    const transactions = await prisma.transaction.findMany({
+      where: {
+        userId,
+        amount: {
+          lt: new Decimal(0),
+        },
+        date: {
+          gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+          lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1),
+        },
+      },
+    })
+    const totalSpending = transactions.reduce(
+      (sum, transaction) => sum.add(transaction.amount),
+      new Decimal(0),
+    )
+    return totalSpending
+  } catch (error) {
+    throw new Error(`Error fetching monthly spending: ${error}`)
+  } finally {
+    await prisma.$disconnect()
+  }
+}
