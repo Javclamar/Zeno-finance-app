@@ -23,6 +23,7 @@ model User {
   money        Decimal       @default(0.00)
   createdAt    DateTime      @default(now())
   transactions Transaction[] @relation("UserTransactions")
+  budgets      Budget[]      @relation("UserBudgets")
 }
 
 model Transaction {
@@ -34,6 +35,17 @@ model Transaction {
   date        DateTime
   userId      Int
   user        User     @relation("UserTransactions", fields: [userId], references: [id])
+}
+
+model Budget {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  category  Category
+  amount    Decimal
+  startDate DateTime
+  endDate   DateTime
+
+  user User @relation("UserBudgets", fields: [userId], references: [id])
 }
 
 enum Category {

@@ -9,11 +9,11 @@
         </div>
         <div class='balance-container'> Income
           <div class='description'> Your income this month</div>
-          <div class='money'> {{ money }}$</div>
+          <div class='money'> {{ income }}$</div>
         </div>
         <div class='balance-container'> Spending
           <div class='description'> Your spendings this month</div>
-          <div class='money'> {{ money }}$</div>
+          <div class='money'> {{ spending }}$</div>
         </div>
       </div>
 
@@ -32,6 +32,7 @@
             <div class="transaction-title">
               {{ tx.name }}
               <div class="transaction-description">{{ tx.description }}</div>
+              <div class="transaction-description">{{ tx.date.split('T')[0] }}</div>
             </div>
             <div class="transaction-amount">
               <font-awesome-icon :icon="tx.amount >= 0 ? 'arrow-up' : 'arrow-down'"
@@ -69,7 +70,10 @@ interface MyJwtPayload {
 
 const user = jwtDecode<MyJwtPayload>(token);
 const money = ref(null);
-const transactions = ref<Array<{ name: string, description: string, amount: number, category: keyof typeof categoryIcons }>>([]);
+const income = ref(null);
+const spending = ref(null);
+const transactions = ref<Array<{ name: string, description: string, amount: number, date: string, category: keyof typeof categoryIcons }>>([]);
+
 
 const categoryIcons = {
   FOOD: '🍔',
@@ -83,7 +87,7 @@ const categoryIcons = {
 
 const fetchUserTransactions = async () => {
   try {
-    const response = await axios.get('/api/user/transactions', {
+    const response = await axios.get('/api/transactions/dashboard', {
       params: { id: user.id },
       headers: {
         Authorization: `Bearer ${token}`
@@ -111,9 +115,39 @@ const fetchUserMoney = async () => {
   }
 };
 
+const fetchUserMontlhyIncome = async () => {
+  try {
+    const response = await axios.get('/api/transactions/monthly-income', {
+      params: { id: user.id },
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    income.value = await response.data.monthlyIncome;
+  } catch (error) {
+    console.error('Error fetching user monthly income:', error);
+  }
+}
+
+const fetchUserMontlhySpending = async () => {
+  try {
+    const response = await axios.get('/api/transactions/monthly-spending', {
+      params: { id: user.id },
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    spending.value = await response.data.monthlySpending;
+  } catch (error) {
+    console.error('Error fetching user monthly spending:', error);
+  }
+}
+
 const fetchUserData = async () => {
   await fetchUserTransactions();
   await fetchUserMoney();
+  await fetchUserMontlhyIncome();
+  await fetchUserMontlhySpending();
 };
 
 onMounted(() => {
@@ -125,7 +159,6 @@ onMounted(() => {
   if (token) {
     localStorage.setItem('token', token);
     window.history.replaceState({}, '', '/dashboard');
-    console.log('Token guardado:', token);
   }
 
 });
@@ -228,13 +261,13 @@ onMounted(() => {
 .transaction-title {
   font-weight: bold;
   color: #FFF;
-  font-size: 1.2rem;
+  font-size: 1rem;
   flex: auto;
   margin-left: 1rem;
 }
 
 .transaction-description {
-  font-size: 0.85rem;
+  font-size: 0.7rem;
   color: var(--texto);
 }
 

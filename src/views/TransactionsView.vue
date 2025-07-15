@@ -7,6 +7,20 @@
         <font-awesome-icon icon="magnifying-glass" style=" font-size: large " />
       </button>
     </div>
+    <div class='pagination-buttons'>
+      <div class='page'><button class='page-button' @click="currentPage--"
+          :disabled="currentPage <= 1">Previous</button>
+        <span>Page {{ currentPage }}</span>
+        <button class='page-button' @click="currentPage++" :disabled="!hasMore">Next</button>
+      </div>
+      <div class='page-size'>
+        <button class='page-button' @click="pageSize--" :disabled="pageSize <= 1"><font-awesome-icon icon="arrow-down"
+            style=" font-size: large " /></button>
+        <span>{{ pageSize }}</span>
+        <button class='page-button' @click="pageSize++" :disabled="pageSize >= 20"><font-awesome-icon icon="arrow-up"
+            style=" font-size: large " /></button>
+      </div>
+    </div>
     <div class='transactions-list'>
       <div class='transaction' v-for="(tx, index) in transactions" :key="index"
         :class="tx.amount >= 0 ? 'income' : 'expense'">
@@ -29,7 +43,7 @@
 <script setup lang="ts">
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 
 const searchInput = ref('');
@@ -46,25 +60,34 @@ interface MyJwtPayload {
 
 const user = jwtDecode<MyJwtPayload>(token);
 const transactions = ref<Array<{ name: string, description: string, amount: number, category: keyof typeof categoryIcons, date: string }>>([]);
-
+const currentPage = ref(1);
+const pageSize = ref(10);
+const hasMore = ref(true);
 const categoryIcons = {
   FOOD: '🍔',
   TRANSPORT: '🚗',
   UTILITIES: '💡',
   ENTERTAINMENT: '🎮',
+  HEALTH: '💊',
+  SALARY: '💰',
   OTHER: '🔧',
 };
 
 const fetchUserTransactions = async () => {
   try {
-    const response = await axios.get('/api/user/transactions', {
-      params: { id: user.id },
+    const response = await axios.get('/api/transactions/user', {
+      params: {
+        id: user.id,
+        page: currentPage.value,
+        pageSize: pageSize.value
+      },
       headers: {
         Authorization: `Bearer ${token}`
       }
     }
     );
-    transactions.value = await response.data;
+    transactions.value = response.data;
+    hasMore.value = response.data.length === pageSize.value;
   } catch (error) {
     console.error('Error fetching user transactions:', error);
   }
@@ -72,13 +95,13 @@ const fetchUserTransactions = async () => {
 
 const searchTransactions = async () => {
   try {
-    const response = await axios.get('/api/user/transactions/search', {
+    const response = await axios.get('/api/transactions/search', {
       params: { id: user.id, search: searchInput.value },
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
-    transactions.value = await response.data;
+    transactions.value = response.data;
   } catch (error) {
     console.error('Error searching transactions:', error);
   }
@@ -87,6 +110,13 @@ const searchTransactions = async () => {
 onMounted(() => {
   fetchUserTransactions();
 });
+watch(currentPage, () => {
+  fetchUserTransactions()
+})
+watch(pageSize, () => {
+  currentPage.value = 1
+  fetchUserTransactions()
+})
 </script>
 
 <style scoped>
@@ -185,5 +215,27 @@ onMounted(() => {
   font-size: xx-large;
   background-color: var(--fondo-secundario);
   border-radius: 20%;
+}
+
+.pagination-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.page-button {
+  margin: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  background-color: #212529;
+  color: #FFF;
+  cursor: pointer;
+}
+
+.page-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
 }
 </style>

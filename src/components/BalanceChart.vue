@@ -103,7 +103,7 @@ onMounted(async () => {
     console.error('User is not authenticated.');
     return;
   }
-  const response = await axios.get('/api/user/transactions', {
+  const response = await axios.get('/api/transactions/monthly', {
     params: { id: user.id },
     headers: {
       Authorization: `Bearer ${token}`
