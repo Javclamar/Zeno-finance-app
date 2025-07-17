@@ -50,7 +50,7 @@ const handleLogin = async () => {
       successMessage.value = 'Successfully logged in! Redirecting...';
       if (isLoggedIn.value) {
         setTimeout(() => {
-          router.push('/dashboard');
+          router.push('/');
         }, 1000);
       }
 

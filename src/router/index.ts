@@ -26,7 +26,7 @@ const router = createRouter({
       meta: { guestsOnly: true },
     },
     {
-      path: '/dashboard',
+      path: '/',
       name: 'dashboard',
       component: DashboardView,
       meta: { requiresAuth: true },
@@ -77,7 +77,7 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.meta.guestsOnly && authStore.isLoggedIn) {
-    return next('/dashboard')
+    return next('/')
   }
 
   if (to.meta.requiresAuth && !authStore.isLoggedIn) {

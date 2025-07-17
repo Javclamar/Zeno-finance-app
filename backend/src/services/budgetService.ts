@@ -44,7 +44,6 @@ export async function getActiveBudgetsByUserService(userId: number) {
     const activeBudgets = await prisma.budget.findMany({
       where: {
         userId,
-        startDate: { lte: today },
         endDate: { gte: today },
       },
       orderBy: { startDate: 'asc' },
@@ -62,5 +61,22 @@ export async function deleteBudgetService(budgetId: number) {
     })
   } catch (error) {
     throw new Error(`Error deleting budget: ${error}`)
+  }
+}
+
+export async function updateBudgetService(budgetId: number, category: Category, amount: number, startDate: Date, endDate: Date) {
+  try {
+    const budget = await prisma.budget.update({
+      where: { id: budgetId },
+      data: {
+        category: category,
+        amount: amount,
+        startDate: startDate,
+        endDate: endDate
+      }
+    })
+    return budget
+  } catch (error) {
+    throw new Error(`Error updating budget: ${error}`)
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <div class='modal'>
     <div class='modal-content'>
-      <div class='form-title'>Create New Budget</div>
+      <div class='form-title'>{{ props.budgetToUpdate ? 'Update Budget' : 'Create new Budget' }}</div>
       <form @submit.prevent="handleSubmit">
         <div class='form-group'>
           <label for='category'>Budget Category:</label>
@@ -20,8 +20,8 @@
           <input type='date' id='startDate' v-model='budget.startDate' required />
           <label for='endDate'>End Date:</label>
           <input type='date' id='endDate' v-model='budget.endDate' required />
-          <button class='submit' type='submit'>Create Budget</button>
-          <button class='close' @click="emit('close')">Close</button>
+          <button class='submit' type='submit'>{{ props.budgetToUpdate ? 'Update' : 'Create' }}</button>
+          <button class='close' @click=handleClose()>Close</button>
         </div>
       </form>
     </div>
@@ -29,46 +29,102 @@
 </template>
 
 <script setup lang="ts">
+import router from '@/router';
 import axios from 'axios';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 
-const emit = defineEmits(['close', 'created']);
+const emit = defineEmits(['close', 'created', 'updated']);
 const token = localStorage.getItem('token');
+const props = defineProps({
+  budgetToUpdate: { type: Object, default: null }
+})
 
 if (!token) {
   throw new Error('No token found in localStorage');
 }
 
 const budget = ref({
+  budgetId: "",
   category: 'OTHER',
   amount: 0,
   startDate: '',
   endDate: ''
 });
 
-const handleSubmit = async () => {
+watch(() => props.budgetToUpdate, (newVal) => {
+  if (newVal) {
+    budget.value = {
+      budgetId: newVal.id,
+      category: newVal.category,
+      amount: newVal.amount,
+      startDate: new Date(newVal.startDate).toISOString().split('T')[0],
+      endDate: new Date(newVal.endDate).toISOString().split('T')[0]
+    }
+  }
+}, { immediate: true })
+
+async function handleSubmit() {
+  if (props.budgetToUpdate) {
+    await handleUpdate();
+    emit('updated')
+  } else {
+    await handleCreate()
+    emit('created')
+  }
+}
+
+const handleUpdate = async (): Promise<void> => {
+  try {
+    const response = await axios.put('/api/budgets/update', {
+      ...budget.value,
+    },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      })
+    if (response.status === 200) {
+      router.push('/budgets');
+    } else {
+      console.error('Failed update budget:', response.data);
+    }
+  } catch (error) {
+    console.error('Error updating budget:', error);
+  }
+}
+
+const handleCreate = async (): Promise<void> => {
   try {
     const response = await axios.post('/api/budgets/new', {
       ...budget.value,
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      }
-    })
+    },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      })
     if (response.status === 200) {
-      emit('created');
-      budget.value = {
-        category: 'OTHER',
-        amount: 0,
-        startDate: '',
-        endDate: ''
-      };
+      router.push('/budgets');
+    } else {
+      console.error('Failed create budget:', response.data);
     }
   } catch (error) {
-    console.error('Error creating budget:', error);
+    console.error('Error updating budget:', error);
   }
+}
+
+function handleClose() {
+  budget.value = {
+    budgetId: "",
+    category: 'OTHER',
+    amount: 0,
+    startDate: '',
+    endDate: ''
+  }
+  emit("close")
 }
 </script>
 

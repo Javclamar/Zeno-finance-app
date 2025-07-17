@@ -5,6 +5,7 @@ import {
   createBudgetService,
   deleteBudgetService,
   getActiveBudgetsByUserService,
+  updateBudgetService,
 } from '../services/budgetService'
 
 export const getActiveBudgetsController = async (req: Request, res: Response) => {
@@ -47,6 +48,26 @@ export const deleteBudgetController = async (req: Request, res: Response) => {
   try {
     await deleteBudgetService(budgetId)
     res.status(200).json({ message: 'Budget deleted succesfully' })
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message })
+    } else {
+      res.status(400).json({ error: 'An unknown error occurred' })
+    }
+  }
+}
+
+export const updateBudgetController = async (req: Request, res: Response) => {
+  const { budgetId, category, amount, startDate, endDate } = req.body
+  try {
+    const budget = await updateBudgetService(
+      budgetId as number,
+      category as Category,
+      amount as number,
+      new Date(startDate),
+      new Date(endDate),
+    )
+    res.status(200).json({ message: 'Budget created successfully', budget })
   } catch (error) {
     if (error instanceof Error) {
       res.status(400).json({ error: error.message })

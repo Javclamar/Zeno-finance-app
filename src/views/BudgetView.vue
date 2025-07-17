@@ -1,9 +1,10 @@
 <template>
-  <NewBudgetModal v-if="isCreateModalOpen" @close="isCreateModalOpen = false" @created="isCreateModalOpen = false" />
+  <BudgetModal v-if="isModalOpen" @close="handleClose" @created="handleCreated" @updated="handleUpdated"
+    :budget-to-update="budgetToEdit ?? undefined" />
   <div class='budget-view'>
     <div class='header'>
       <div class='title'>Budgets</div>
-      <button class='add-budget' @click="isCreateModalOpen = true">New Budget</button>
+      <button class='add-budget' @click="isModalOpen = true">New Budget</button>
     </div>
     <div class='subtitle'>Active Budgets</div>
     <div class='budget-list'>
@@ -21,7 +22,7 @@
             </div>
           </router-link>
           <div class="buttons">
-            <button class="edit-budget" @click="isEditModalOpen = true">Edit</button>
+            <button class="edit-budget" @click="openModal(budget)">Edit</button>
             <button class="delete-budget" @click="deleteBudget(budget.id as unknown as number)">Delete</button>
           </div>
         </div>
@@ -34,12 +35,12 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { onMounted, ref } from 'vue';
-import NewBudgetModal from '../components/NewBudgetModal.vue';
+import BudgetModal from '../components/BudgetModal.vue';
 
 const token = localStorage.getItem('token');
 const budgets = ref<Budget[]>([]);
-const isCreateModalOpen = ref(false);
-const isEditModalOpen = ref(false);
+const isModalOpen = ref(false);
+const budgetToEdit = ref<Budget | null>(null)
 
 if (!token) {
   throw new Error('No token found in localStorage');
@@ -52,7 +53,7 @@ interface MyJwtPayload {
 }
 
 interface Budget {
-  id: string;
+  id: number;
   category: string;
   amount: number;
   startDate: string;
@@ -93,16 +94,37 @@ const deleteBudget = async (budgetId: number) => {
         Authorization: `Bearer ${token}`
       }
     })
+    budgets.value = budgets.value.filter(obj => obj.id !== budgetId);
   } catch (error) {
     console.error('Error deleting budget:', error);
   }
 }
 
+const handleCreated = (): void => {
+  isModalOpen.value = false;
+  fetchUserActiveBudgets();
+}
+
+const handleUpdated = (): void => {
+  isModalOpen.value = false;
+  fetchUserActiveBudgets();
+}
+
+const handleClose = (): void => {
+  isModalOpen.value = false;
+  budgetToEdit.value = null
+}
+
+function openModal(budget: Budget) {
+  budgetToEdit.value = budget
+  isModalOpen.value = true
+}
 
 
 onMounted(() => {
   fetchUserActiveBudgets();
 });
+
 </script>
 
 <style scoped>
