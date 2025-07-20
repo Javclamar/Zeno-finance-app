@@ -42,13 +42,19 @@
 <script setup lang="ts">
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed, watch } from 'vue';
+import { useToast } from 'vue-toastification';
 import BudgetModal from '../components/BudgetModal.vue';
 
+const toast = useToast()
 const token = localStorage.getItem('token');
 const budgets = ref<Budget[]>([]);
 const isModalOpen = ref(false);
 const budgetToEdit = ref<Budget | null>(null)
+
+const lowBudgets = computed(() =>
+  budgets.value.filter(b => (b.spent / b.amount) >= 0.75)
+)
 
 if (!token) {
   throw new Error('No token found in localStorage');
@@ -133,6 +139,12 @@ function openModal(budget: Budget) {
 onMounted(() => {
   fetchUserActiveBudgets();
 });
+
+watch(lowBudgets, (newVal) => {
+  if (newVal.length > 0) {
+    toast.warning(`⚠️ You have ${newVal.length} budget(s) below 25%!`)
+  }
+})
 </script>
 
 <style scoped>

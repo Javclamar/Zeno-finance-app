@@ -5,7 +5,6 @@ import { createApp } from 'vue'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
-
   faArrowDown,
   faArrowUp,
   faGear,
@@ -13,9 +12,11 @@ import {
   faMagnifyingGlass,
   faUser,
   faWallet,
-
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import Toast, { POSITION } from 'vue-toastification'
+import type { PluginOptions } from 'vue-toastification'
+import 'vue-toastification/dist/index.css'
 
 import App from './App.vue'
 import router from './router'
@@ -23,9 +24,17 @@ import router from './router'
 library.add(faUser, faHome, faGear, faWallet, faArrowUp, faArrowDown, faMagnifyingGlass)
 const app = createApp(App)
 const pinia = createPinia()
+const options: PluginOptions = {
+  position: POSITION.TOP_RIGHT,
+  timeout: 3000,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+}
 
 app.component('font-awesome-icon', FontAwesomeIcon)
 app.use(pinia)
 app.use(router)
+app.use(Toast, options)
 
 app.mount('#app')

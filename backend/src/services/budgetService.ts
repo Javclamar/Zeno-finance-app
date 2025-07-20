@@ -11,18 +11,28 @@ export async function createBudgetService(
   endDate: Date,
 ) {
   try {
-    const budget = await prisma.budget.create({
-      data: {
-        userId,
+    const categoryBudget = await prisma.budget.findFirst({
+      where: {
+        userId: userId,
         category: category,
-        amount,
-        startDate,
-        endDate,
       },
     })
-    return budget
+    if (!categoryBudget) {
+      const budget = await prisma.budget.create({
+        data: {
+          userId,
+          category: category,
+          amount,
+          startDate,
+          endDate,
+        },
+      })
+      return budget
+    } else {
+      throw new Error(`There is another budget with the same category`)
+    }
   } catch (error) {
-    throw new Error(`Error creating budget: ${error}`)
+    throw new Error(error instanceof Error ? error.message : String(error))
   }
 }
 
@@ -34,7 +44,7 @@ export async function getBudgetsByUserService(userId: number) {
     })
     return budgets
   } catch (error) {
-    throw new Error(`Error fetching budgets: ${error}`)
+    throw new Error(error instanceof Error ? error.message : String(error))
   }
 }
 
@@ -50,7 +60,7 @@ export async function getActiveBudgetsByUserService(userId: number) {
     })
     return activeBudgets
   } catch (error) {
-    throw new Error(`Error fetching active budgets: ${error}`)
+    throw new Error(error instanceof Error ? error.message : String(error))
   }
 }
 
@@ -60,11 +70,17 @@ export async function deleteBudgetService(budgetId: number) {
       where: { id: Number(budgetId) },
     })
   } catch (error) {
-    throw new Error(`Error deleting budget: ${error}`)
+    throw new Error(error instanceof Error ? error.message : String(error))
   }
 }
 
-export async function updateBudgetService(budgetId: number, category: Category, amount: number, startDate: Date, endDate: Date) {
+export async function updateBudgetService(
+  budgetId: number,
+  category: Category,
+  amount: number,
+  startDate: Date,
+  endDate: Date,
+) {
   try {
     const budget = await prisma.budget.update({
       where: { id: budgetId },
@@ -72,11 +88,11 @@ export async function updateBudgetService(budgetId: number, category: Category, 
         category: category,
         amount: amount,
         startDate: startDate,
-        endDate: endDate
-      }
+        endDate: endDate,
+      },
     })
     return budget
   } catch (error) {
-    throw new Error(`Error updating budget: ${error}`)
+   throw new Error(error instanceof Error ? error.message : String(error))
   }
 }

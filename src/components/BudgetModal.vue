@@ -29,10 +29,11 @@
 
 <script setup lang="ts">
 import router from '@/router';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { ref, watch } from 'vue';
+import { useToast } from 'vue-toastification';
 
-
+const toast = useToast()
 const emit = defineEmits(['close', 'created', 'updated']);
 const token = localStorage.getItem('token');
 const props = defineProps({
@@ -110,8 +111,15 @@ const handleCreate = async (): Promise<void> => {
     } else {
       console.error('Failed create budget:', response.data);
     }
-  } catch (error) {
-    console.error('Error updating budget:', error);
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.log(error.response?.data)
+      const backendMessage = error.response?.data?.error || 'Unknown error'
+      toast.error(`❌ ${backendMessage}`)
+    } else {
+      console.error(error)
+      toast.error('❌ Unknown error')
+    }
   }
 }
 
