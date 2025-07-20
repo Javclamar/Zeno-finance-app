@@ -11,11 +11,10 @@
             <option value='ENTERTAINMENT'>Entertainment</option>
             <option value='UTILITIES'>Utilities</option>
             <option value='HEALTH'>Health</option>
-            <option value='SALARY'>Salary</option>
             <option value='OTHER'>Other</option>
           </select>
           <label for='amount'> Budget Amount:</label>
-          <input type='number' id='amount' v-model='budget.amount' min='1' required />
+          <input type='float' id='amount' v-model='budget.amount' min='1' required />
           <label for='startDate'>Start Date:</label>
           <input type='date' id='startDate' v-model='budget.startDate' required />
           <label for='endDate'>End Date:</label>

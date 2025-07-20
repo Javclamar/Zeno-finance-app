@@ -16,12 +16,20 @@
                 <span>{{ categoryIcons[budget.category as keyof typeof categoryIcons] }}</span>
               </div>
               <div class="dates">
-                <div class="budget-startDate">{{ new Date(budget.startDate).toLocaleDateString() }} - </div>
-                <div class="budget-endDate">{{ new Date(budget.endDate).toLocaleDateString() }}</div>
+                <div class="budget-startDate">{{ new Date(budget.startDate).toLocaleDateString() }} - {{ new
+                  Date(budget.endDate).toLocaleDateString() }}</div>
               </div>
+              <div class='amounts'>
+                <div class='total-budget'> Total: {{ budget.amount }}$</div>
+                <div class='total-budget'> Spent: {{ budget.spent }}$</div>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-bar-fill" :style="{ width: (budget.spent / budget.amount * 100) + '%' }"></div>
+              </div>
+              <div class='progress'> Spent {{ (budget.spent / budget.amount * 100).toFixed(2) + '%' }}</div>
             </div>
           </router-link>
-          <div class="buttons">
+          <div class=" buttons">
             <button class="edit-budget" @click="openModal(budget)">Edit</button>
             <button class="delete-budget" @click="deleteBudget(budget.id as unknown as number)">Delete</button>
           </div>
@@ -56,6 +64,7 @@ interface Budget {
   id: number;
   category: string;
   amount: number;
+  spent: number;
   startDate: string;
   endDate: string;
 }
@@ -124,14 +133,13 @@ function openModal(budget: Budget) {
 onMounted(() => {
   fetchUserActiveBudgets();
 });
-
 </script>
 
 <style scoped>
 .budget-view {
-  padding: 2rem;
-  margin: auto;
   font-family: 'AtkinsonHyperlegibleMono';
+  margin: 3rem auto;
+  width: 80%
 }
 
 .header {
@@ -139,17 +147,16 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 3rem;
-  gap: 60rem
 }
 
 .title {
-  font-size: 3rem;
+  font-size: 3vw;
   font-weight: bold;
   color: #FFFF
 }
 
 .subtitle {
-  font-size: 1.5rem;
+  font-size: 2vw;
   margin-bottom: 1rem;
   color: #FFFF
 }
@@ -161,8 +168,8 @@ onMounted(() => {
   color: #FFFF;
   border-radius: 0.5rem;
   text-decoration: none;
-  margin: 1rem;
-  font-size: 1rem;
+  margin: 1vw;
+  font-size: 1vw;
   border: none;
   cursor: pointer;
   font-family: 'AtkinsonHyperlegibleMono';
@@ -188,22 +195,24 @@ onMounted(() => {
   padding: 0 1rem;
   margin-top: 1rem;
   border-radius: 10px;
-  background-color: #212529;
+  background-color: #212529
 }
 
 .link-content {
   display: flex;
   text-decoration: none;
-
+  width: 90%;
 }
 
 .icon-dates {
   display: flex;
-  gap: 2rem;
-  align-items: center
+  gap: 2vw;
+  align-items: center;
+  width: 90%;
 }
 
 .budget-category-icon {
+  flex: 0.3;
   width: 3rem;
   height: 3rem;
   border-radius: 20%;
@@ -211,29 +220,39 @@ onMounted(() => {
 }
 
 .dates {
+  flex: 1.3;
   color: var(--texto);
   display: flex;
-  gap: 1rem
+  gap: 1rem;
+  font-size: 1.3vw;
 }
 
-.budget-amount {
+.amounts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+  font-size: 1.3vw
+}
+
+.total-budget {
   color: #FFF;
-  font-size: xx-large;
   text-align: right;
-  margin: 1rem;
-  flex: auto
+  margin: 0.1rem;
+  flex: 1
 }
 
 .buttons {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin: 1rem;
-  margin-left: 2rem
+  gap: 1vw;
+  margin: 1vw;
+  margin-left: 2vw;
+  font-family: 'AtkinsonHyperlegibleMono'
 }
 
 .edit-budget {
-  padding: 0.5rem;
+  padding: 0.5vw;
   background-color: #ffb703;
   border: none;
   border-radius: 0.25rem;
@@ -241,10 +260,32 @@ onMounted(() => {
 }
 
 .delete-budget {
-  padding: 0.5rem;
+  padding: 0.5vw;
   background-color: #e76f51;
   border: none;
   border-radius: 0.25rem;
   cursor: pointer
+}
+
+.progress-bar {
+  flex: 1;
+  width: 100%;
+  height: 0.5rem;
+  background-color: #eee;
+  border-radius: 0.2rem;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: #e76f51;
+  transition: width 0.3s ease;
+}
+
+.progress {
+  flex: 0.2;
+  text-decoration: none;
+  color: #fff;
+  font-size: 1.3vw
 }
 </style>

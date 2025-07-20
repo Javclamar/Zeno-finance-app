@@ -19,16 +19,15 @@
 :root {
   --fondo: #0000;
   --fondo-secundario: #133034;
-  --resaltado: #6265B8;
-  --texto: #ABE7E5;
-  --boton: #8E99E8;
+  --resaltado: #6265b8;
+  --texto: #abe7e5;
+  --boton: #8e99e8;
   --boton-hover: hsla(160, 100%, 37%, 1);
 }
 
 @media (max-width: 768px) {
   .main-content {
     padding: 0.5rem;
-    flex-direction: column;
     align-items: stretch;
   }
   .header {

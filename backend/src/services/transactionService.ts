@@ -30,7 +30,23 @@ export async function createTransactionService(
         },
       },
     })
-    return transaction
+    if (amount.isNegative()) {
+      const existsBudget = await prisma.budget.findFirst({
+        where: {
+          userId: userId,
+          category: category as Category,
+        },
+      })
+      if (existsBudget) {
+        await prisma.budget.update({
+          where: { id: existsBudget.id },
+          data: {
+            spent: { increment: amount.abs() },
+          },
+        })
+      }
+      return transaction
+    }
   } catch (error) {
     throw new Error(`Error creating income transaction: ${error}`)
   } finally {

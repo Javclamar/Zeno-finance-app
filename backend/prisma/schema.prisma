@@ -42,6 +42,7 @@ model Budget {
   userId    Int
   category  Category
   amount    Decimal
+  spent     Decimal  @default(0.0)
   startDate DateTime
   endDate   DateTime
 
