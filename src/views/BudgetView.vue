@@ -10,7 +10,7 @@
     <div class='budget-list'>
       <div v-for="budget in budgets" :key="budget.id" class="budget">
         <div class="budget-link">
-          <router-link :to="`/api/budgets/${budget.id}`" class="link-content">
+          <div class="link-content">
             <div class="icon-dates">
               <div class="budget-category-icon">
                 <span>{{ categoryIcons[budget.category as keyof typeof categoryIcons] }}</span>
@@ -28,7 +28,7 @@
               </div>
               <div class='progress'> Spent {{ (budget.spent / budget.amount * 100).toFixed(2) + '%' }}</div>
             </div>
-          </router-link>
+          </div>
           <div class=" buttons">
             <button class="edit-budget" @click="openModal(budget)">Edit</button>
             <button class="delete-budget" @click="deleteBudget(budget.id as unknown as number)">Delete</button>
@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import { onMounted, ref, computed, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 import BudgetModal from '../components/BudgetModal.vue';
 

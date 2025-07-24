@@ -4,7 +4,6 @@ import LoginView from '@/views/LoginView.vue'
 import NewExpenseView from '@/views/NewExpenseView.vue'
 import NewIncomeView from '@/views/NewIncomeView.vue'
 import RegisterView from '@/views/RegisterView.vue'
-import SettingsView from '@/views/SettingsView.vue'
 import TransactionsView from '@/views/TransactionsView.vue'
 
 import { useAuthStore } from '@/stores/authStore'
@@ -41,12 +40,6 @@ const router = createRouter({
       path: '/budgets',
       name: 'budgets',
       component: BudgetView,
-      meta: { requiresAuth: true },
-    },
-    {
-      path: '/settings',
-      name: 'settings',
-      component: SettingsView,
       meta: { requiresAuth: true },
     },
     {
