@@ -1,7 +1,12 @@
 from keras.layers import Embedding, Input, LSTM, Dense, Dropout, Concatenate, RepeatVector, Flatten
 from keras.models import Model
 
-
+# Input:
+# N -> Number of days to predict the next days close
+# num_tickers -> Number of tickers to predict
+# num_features -> Number of features columns in the dataset
+# emb_dim -> Dimension of the embedding layer
+# This creates the LSTM model with 10 layers
 def build_model(N, num_tickers, num_features, emb_dim=8):
 
     seq_input = Input(shape=(N, num_features), name='seq_input')
@@ -20,5 +25,4 @@ def build_model(N, num_tickers, num_features, emb_dim=8):
 
     model = Model(inputs=[seq_input, ticker_input], outputs=output)
     model.compile(optimizer='adam', loss='mse')
-    model.summary()
     return model

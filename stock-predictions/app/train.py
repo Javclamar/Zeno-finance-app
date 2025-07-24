@@ -1,15 +1,16 @@
 from app.data import preprocessing, create_sequences
 from app.model import build_model
 import pickle
-import matplotlib.pyplot as plt
-import numpy as np
+
+# Training ad saving of the LSTM model
 
 def train():
     
-    df_scaled, scalers, le = preprocessing('./data/historical_stock_data.csv')
-    X, y, ticker_ids = create_sequences(df_scaled)
+    df_scaled, scalers, le = preprocessing('./data/historical_stock_data.csv') # Returns the df, the scalers used for the unique tickers, and the label encoder used for the ticjer encoding
+    X, y, ticker_ids = create_sequences(df_scaled) # Creates 60 days sequence used to predict the next days close, returning the X, y df
     num_tickers = len(le.classes_)
 
+    # Train test splitting (needs to be done like this to dont shuffle the time series)
     split = int(0.8 * len(X))
     X_train, X_test = X[:split], X[split:]
     y_train, y_test = y[:split], y[split:]
@@ -21,6 +22,7 @@ def train():
     print(f"X shape: {X.shape}")
     print(f"y shape: {y.shape}")
 
+    # Save the scaler and encoder to use for the predictions inverse scaling and encoding
     with open('models/scalers.pkl', 'wb') as f:
         pickle.dump(scalers, f)
 
