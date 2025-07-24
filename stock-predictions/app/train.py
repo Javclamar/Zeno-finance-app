@@ -36,34 +36,5 @@ def train():
 
     model.save('./models/stock_lstm_model.keras')
 
-    y_pred_scaled = model.predict([X_test, ticker_test]).flatten()
-    y_pred_real, y_test_real = [], []
-
-    for pred_scaled, real_scaled, ticker_id in zip(y_pred_scaled, y_test, ticker_test.flatten()):
-
-        ticker_name = le.inverse_transform([ticker_id])[0]
-        scaler = scalers[ticker_name]
-        
-        dummy = np.zeros((1, len(['Open', 'Close', 'High', 'Low', 'Volume', 'Target'])))
-        dummy[0, -1] = pred_scaled
-        pred_real = scaler.inverse_transform(dummy)[0, -1]
-        y_pred_real.append(pred_real)
-
-        dummy[0, -1] = real_scaled
-        real = scaler.inverse_transform(dummy)[0, -1]
-        y_test_real.append(real)
-    
-    y_pred_real = np.array(y_pred_real)
-    y_test_real = np.array(y_test_real)
-
-    plt.figure(figsize=(12,6))
-    plt.plot(y_test_real[1:201], label='Real Close')
-    plt.plot(np.roll(y_pred_real, -1)[:200], label='Predicted Close')
-    plt.title("Predicted vs Real Close Prices (first 200 test samples)")
-    plt.xlabel("Sample")
-    plt.ylabel("Close price")
-    plt.legend()
-    plt.show()
-
 if __name__ == "__main__":
     train()
