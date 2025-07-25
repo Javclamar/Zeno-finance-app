@@ -2,6 +2,7 @@ import './assets/css/main.css'
 
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
+import { Chart, Filler } from 'chart.js'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
@@ -31,6 +32,8 @@ const options: PluginOptions = {
   pauseOnHover: true,
   draggable: true,
 }
+
+Chart.register(Filler);
 
 app.component('font-awesome-icon', FontAwesomeIcon)
 app.use(pinia)

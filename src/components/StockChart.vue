@@ -48,7 +48,8 @@ const chartData = ref({
       data: [] as number[],
       fill: true,
       borderColor: '#9DA7A9',
-      tension: 0.3
+      backgroundColor: 'rgba(157, 167, 169, 0.2)',
+      tension: 0.2
     }
   ]
 })
@@ -63,7 +64,7 @@ const chartOptions = ref({
   scales: {
     x: {
       grid: {
-        color: '#133034',
+        color: 'rgba(157, 167, 169, 0.2)',
       },
       ticks: {
         color: '#9DA7A9',
@@ -81,7 +82,7 @@ const chartOptions = ref({
         font: { family: 'AtkinsonHyperlegibleMono' }
       },
       grid: {
-        color: '#0002'
+        color: 'rgba(157, 167, 169, 0.2)'
       },
       ticks: {
         color: '#9DA7A9',
@@ -117,12 +118,12 @@ async function getStockData(ticker: string, days: number) {
     const maxStock = Math.max(...data);
     const minStock = Math.min(...data);
     const range = maxStock - minStock
-    const padding = range * 0.1;
+    const padding = range * 0.2;
 
     chartData.value.labels = labels;
     chartData.value.datasets[0].data = data;
-    chartOptions.value.scales.y.max = maxStock + padding;
-    chartOptions.value.scales.y.min = minStock - padding;
+    chartOptions.value.scales.y.max = Math.round((maxStock + padding) / 5) * 5;
+    chartOptions.value.scales.y.min = Math.round((minStock - padding) / 5) * 5;
     chartKey.value++;
   } catch (error) {
     console.error(`Error loading the chart: ${error}`)

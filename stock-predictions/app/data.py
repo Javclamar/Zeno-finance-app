@@ -101,4 +101,12 @@ def get_stock_data(ticker, days):
     df['Date'] = df['Date'].astype(str)
     return df.to_dict(orient='records')
 
+def get_current_price(ticker):
+    stock = yf.Ticker(ticker)
+    data = stock.history(period="1d", interval="1m")
+    if not data.empty:
+        price = data['Close'].iloc[-1]
+        return {"ticker": ticker, "price": round(price, 2)}
+    else:
+        return {"ticker": ticker, "price": None, "error": "No data found"}
 
