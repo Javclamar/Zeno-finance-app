@@ -15,7 +15,7 @@
     <div class="message">Don't have an account yet? <router-link to="/register" class="link">Sign Up</router-link></div>
 
     <button class='google' @click="loginWithGoogle">
-      <img src="@/assets/images/google.png" alt="Google Icon">
+      <img src="/images/google.png" alt="Google Icon">
     </button>
   </div>
 </template>

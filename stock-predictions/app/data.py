@@ -1,3 +1,4 @@
+import os
 import yfinance as yf
 import pandas as pd
 import numpy as np
@@ -5,6 +6,9 @@ from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from datetime import datetime, timedelta
 
 tickers = ['AAPL', 'MSFT', 'GOOG', 'AMZN', 'META', 'TSLA', 'NFLX', 'NVDA', 'JPM', 'BAC', 'SPY', 'QQQ'] # Tickers that we will predict
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+NEW_DATA_PATH = os.path.join(BASE_DIR, "..", "data", "new_stock_data.csv")
+HISTORICAL_DATA_PATH = os.path.join(BASE_DIR, "..", "data", "historical_stock_data.csv")
 
 # Downloads the data used to train the model, this will be used in training
 def download_historical_data():
@@ -17,7 +21,7 @@ def download_historical_data():
         dfs.append(df.reset_index(drop=True))
     df_all = pd.concat(dfs)
     df_all.sort_values(['Ticker', 'Date'], inplace=True)
-    df_all.to_csv('./data/historical_stock_data.csv', index=False)
+    df_all.to_csv(HISTORICAL_DATA_PATH, index=False)
     print("✅ Data saved to historical_stock_data.csv")
 
 # Downloads the data used to make predictions. This could be swapped with a query to a MongoDB in the feature so we dont have 2 different datasets
@@ -34,7 +38,7 @@ def download_recent_data():
         dfs.append(df.reset_index(drop=True))
     df_all = pd.concat(dfs)
     df_all.sort_values(['Ticker', 'Date'], inplace=True)
-    df_all.to_csv('./data/new_stock_data.csv', index=False)
+    df_all.to_csv(NEW_DATA_PATH, index=False)
     print("✅ Data saved to new_stock_data.csv")
 
 # Preprocessing of the data, scaling, encoding and sorting by ticker and date to create the time-series for each ticker
@@ -68,7 +72,6 @@ def preprocessing(csv_path):
     # Encode the Ticker column
     le = LabelEncoder()
     df_scaled['Ticker'] = le.fit_transform(df_scaled['Ticker'])
-    print("Data after preprocessing:\n", df_scaled.head())
     return df_scaled, scalers, le
 
 # Creates a N days sequence of data and returns the X df( Values ), y df( Target ) and tickers_labels
@@ -86,4 +89,16 @@ def create_sequences(df, N=60, columns=['Open', 'Close', 'High', 'Low', 'Volume'
             ticker_ids.append(ticker)
     
     return np.array(X), np.array(y), np.array(ticker_ids)
+
+def get_stock_data(ticker, days):
+    df = pd.read_csv(HISTORICAL_DATA_PATH)
+    df.dropna(inplace=True)
+    df['Date'] = pd.to_datetime(df['Date'])
+    df = df[df['Ticker'] == ticker]
+    df.sort_values(['Date'], inplace=True)
+    df = df[-days:]
+    df = df[['Date', 'Close']]
+    df['Date'] = df['Date'].astype(str)
+    return df.to_dict(orient='records')
+
 

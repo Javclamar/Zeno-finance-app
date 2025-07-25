@@ -1,6 +1,7 @@
 import BudgetView from '@/views/BudgetView.vue'
 import DashboardView from '@/views/DashboardView.vue'
 import LoginView from '@/views/LoginView.vue'
+import MarketView from '@/views/MarketView.vue'
 import NewExpenseView from '@/views/NewExpenseView.vue'
 import NewIncomeView from '@/views/NewIncomeView.vue'
 import RegisterView from '@/views/RegisterView.vue'
@@ -52,6 +53,12 @@ const router = createRouter({
       path: '/transactions/new/expense',
       name: 'new-expense',
       component: NewExpenseView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/market',
+      name: 'market',
+      component: MarketView,
       meta: { requiresAuth: true },
     },
   ],

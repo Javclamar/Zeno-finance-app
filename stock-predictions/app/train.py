@@ -1,12 +1,19 @@
-from app.data import preprocessing, create_sequences
+from app.data import preprocessing, create_sequences, download_historical_data, download_recent_data
 from app.model import build_model
 import pickle
+import os
 
 # Training ad saving of the LSTM model
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+NEW_DATA_PATH = os.path.join(BASE_DIR, "..", "data", "new_stock_data.csv")
+HISTORICAL_DATA_PATH = os.path.join(BASE_DIR, "..", "data", "historical_stock_data.csv")
+
 def train():
-    
-    df_scaled, scalers, le = preprocessing('./data/historical_stock_data.csv') # Returns the df, the scalers used for the unique tickers, and the label encoder used for the ticjer encoding
+
+    download_historical_data()
+    download_recent_data()
+    df_scaled, scalers, le = preprocessing(HISTORICAL_DATA_PATH) # Returns the df, the scalers used for the unique tickers, and the label encoder used for the ticjer encoding
     X, y, ticker_ids = create_sequences(df_scaled) # Creates 60 days sequence used to predict the next days close, returning the X, y df
     num_tickers = len(le.classes_)
 

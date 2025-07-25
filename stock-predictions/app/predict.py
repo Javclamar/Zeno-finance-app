@@ -1,26 +1,35 @@
+import os
 from keras.models import load_model
 import pickle
 import pandas as pd
 import numpy as np
 
+
 # Function used to predict the next day close for the tickers in the dataset
 def predict_new_data():
+
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    MODEL_PATH = os.path.join(BASE_DIR, "..", "models", "stock_lstm_model.keras")
+    SCALER_PATH = os.path.join(BASE_DIR, "..", "models", "scalers.pkl")
+    ENCODER_PATH = os.path.join(BASE_DIR, "..", "models", "label_encoder.pkl")
+    NEW_DATA_PATH = os.path.join(BASE_DIR, "..", "data", "new_stock_data.csv")
 
     # Load the model, scalers and encoders used in training to ensure cohesion
     N = 60
     columns = ['Open', 'Close', 'High', 'Low', 'Volume']
-    model = load_model('./models/stock_lstm_model.keras')
+    model = load_model(MODEL_PATH)
     predictions = {}
 
-    with open('models/scalers.pkl', 'rb') as f:
+    with open(SCALER_PATH, 'rb') as f:
         scalers = pickle.load(f)
-    with open('models/label_encoder.pkl', 'rb') as f:
+    with open(ENCODER_PATH, 'rb') as f:
         le = pickle.load(f)
 
     # Read the pre-downloaded csv and adds a dummy column
-    df = pd.read_csv('./data/new_stock_data.csv')
+    df = pd.read_csv(NEW_DATA_PATH)
     df['Date'] = pd.to_datetime(df['Date'])
     df['Target'] = 0
+    df.dropna(inplace=True)
 
 
     for ticker in df['Ticker'].unique():

@@ -2,7 +2,7 @@
 <template>
   <header class="header">
     <div class="left">
-      <img src="@/assets/images/logo.svg" alt="Zave" class="logo" />
+      <img src="/images/logo.svg" alt="Zave" class="logo" />
     </div>
     <div class="center">
       <nav role="navigation" aria-label="Main navigation">
@@ -10,6 +10,7 @@
           <li><router-link to="/">Dashboard</router-link></li>
           <li><router-link to="/transactions">Transactions</router-link></li>
           <li><router-link to="/budgets">Budgets</router-link></li>
+          <li><router-link to="/market">Stocks</router-link></li>
         </ul>
       </nav>
     </div>
