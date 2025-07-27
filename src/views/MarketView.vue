@@ -20,7 +20,7 @@
         <div class='current-price-value'>{{ currentPrice }}$</div>
       </div>
       <div class='prediction'>
-        <div class='prediction-title'>Prediction for tomorrows close</div>
+        <div class='prediction-title'>Prediction for next close</div>
         <div class='prediction-value' v-if="predictions[selectedStock]"> {{ predictions[selectedStock as
           string].toFixed(3)
         }}$
