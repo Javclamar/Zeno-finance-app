@@ -1,5 +1,6 @@
 from keras.layers import Embedding, Input, LSTM, Dense, Dropout, Concatenate, RepeatVector, Flatten
 from keras.models import Model
+from keras.losses import Huber
 
 # Input:
 # N -> Number of days to predict the next days close
@@ -30,5 +31,5 @@ def build_model(N, num_tickers, num_features, ticker_emb_dim=8, dow_emb_dim=3):
     output = Dense(1)(x)
 
     model = Model(inputs=[seq_input, ticker_input, dow_input], outputs=output)
-    model.compile(optimizer='adam', loss='mse')
+    model.compile(optimizer='adam', loss=Huber())
     return model

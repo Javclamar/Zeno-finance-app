@@ -21,7 +21,6 @@ def predict_new_data():
     columns = ['Open', 'Close', 'High', 'Low', 'Volume', 'Days_until_next_close']
 
     if os.path.exists(PREDICTIONS_PATH):
-        print("📂 Loading saved predictions from disk...")
         with open(PREDICTIONS_PATH, 'r') as f:
             predictions = json.load(f)
         return predictions

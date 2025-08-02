@@ -1,12 +1,17 @@
 import os
 import yfinance as yf
 import pandas as pd
+import pandas_ta as ta
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from datetime import datetime, timedelta
 from alpaca.data.historical.stock import StockHistoricalDataClient
 from alpaca.data.requests import StockBarsRequest
 from alpaca.data.timeframe import TimeFrame
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 tickers = ['AAPL', 'MSFT', 'GOOG', 'AMZN', 'META', 'TSLA', 'NFLX', 'NVDA', 'JPM', 'BAC', 'SPY', 'QQQ'] # Tickers that we will predict
@@ -14,8 +19,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 NEW_DATA_PATH = os.path.join(BASE_DIR, "..", "data", "new_stock_data.csv")
 HISTORICAL_DATA_PATH = os.path.join(BASE_DIR, "..", "data", "historical_stock_data.csv")
 
-SECRET = 'msKtm4Mhj2Gu1sSZoNAJuVvp6ZXcXPMlOebaIgJB'
-KEY = 'PKBKHWDRUWLU7Z9GJXZI'
+SECRET_KEY = os.getenv('SECRET')
+API_KEY = os.getenv('KEY')
 
 # Downloads the data used to train the model, this will be used in training
 def download_historical_data():
@@ -133,8 +138,8 @@ def get_current_price(ticker):
 
 def get_historical_data_alpaca():
     client = StockHistoricalDataClient(
-        api_key=KEY,
-        secret_key=SECRET
+        api_key=API_KEY,
+        secret_key=SECRET_KEY
     )
 
     request_params = StockBarsRequest(
@@ -143,6 +148,7 @@ def get_historical_data_alpaca():
         start=datetime(2020, 1, 1),
         end=datetime.today().date()
     )
+    
     bars = client.get_stock_bars(request_params)
     dfs = []
     for ticker in tickers:
@@ -157,7 +163,8 @@ def get_historical_data_alpaca():
         "Ticker": ticker,
         "Date": bar.timestamp.date().isoformat()
     } for bar in ticker_bars])
-
+        
+        df.sort_values('Date', inplace=True)
         dfs.append(df)
         
     final_df = pd.concat(dfs, ignore_index=True)
@@ -169,8 +176,8 @@ def get_recent_data_alpaca():
     start_date = datetime.today().date() - timedelta(days=100)
 
     client = StockHistoricalDataClient(
-        api_key=KEY,
-        secret_key=SECRET
+        api_key=API_KEY,
+        secret_key=SECRET_KEY
     )
 
     request_params = StockBarsRequest(
@@ -194,7 +201,8 @@ def get_recent_data_alpaca():
         "Ticker": ticker,
         "Date": bar.timestamp.date().isoformat()
     } for bar in ticker_bars])
-
+        
+        df.sort_values('Date', inplace=True)
         dfs.append(df)
         
     final_df = pd.concat(dfs, ignore_index=True)

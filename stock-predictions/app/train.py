@@ -1,7 +1,10 @@
-from app.data import preprocessing, create_sequences, download_historical_data, download_recent_data, get_historical_data_alpaca, get_recent_data_alpaca
+from app.data import preprocessing, create_sequences, get_historical_data_alpaca, get_recent_data_alpaca
 from app.model import build_model
 import pickle
 import os
+from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
+import numpy as np
+import matplotlib.pyplot as plt
 
 # Training ad saving of the LSTM model
 
@@ -9,12 +12,13 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 NEW_DATA_PATH = os.path.join(BASE_DIR, "..", "data", "new_stock_data.csv")
 HISTORICAL_DATA_PATH = os.path.join(BASE_DIR, "..", "data", "historical_stock_data.csv")
 
+
 def train():
 
     get_historical_data_alpaca()
     get_recent_data_alpaca()
 
-    df_scaled, scalers, le = preprocessing(HISTORICAL_DATA_PATH) # Returns the df, the scalers used for the unique tickers, and the label encoder used for the ticjer encoding
+    df_scaled, scalers, le = preprocessing(HISTORICAL_DATA_PATH) # Returns the df, the scalers used for the unique tickers, and the label encoder used for the ticker encoding
     X_seq, y, ticker_ids, X_dow = create_sequences(df_scaled) # Creates 60 days sequence used to predict the next days close, returning the X, y df
     num_tickers = len(le.classes_)
 
@@ -45,6 +49,53 @@ def train():
         epochs=20,
         batch_size=32
     )
+    
+    # Predict on test set
+    y_pred_scaled = model.predict([X_test, ticker_test, X_dow_test])
+    
+    y_pred_real = []
+    y_test_real = []
+
+
+    for i in range(len(y_pred_scaled)):
+        ticker_id = ticker_test[i][0]
+        ticker = le.inverse_transform([ticker_id])[0]
+        scaler = scalers[ticker]
+
+        dummy_pred = np.zeros((1, 7))
+        dummy_pred[0, -1] = y_pred_scaled[i].item()
+        pred_real = scaler.inverse_transform(dummy_pred)[0, -1]
+        y_pred_real.append(pred_real)
+
+        dummy_true = np.zeros((1, 7))
+        dummy_true[0, -1] = y_test[i].item()
+        true_real = scaler.inverse_transform(dummy_true)[0, -1]
+        y_test_real.append(true_real)
+
+    # Calculate metrics
+    r2_real = r2_score(y_test_real, y_pred_real)
+    r2 = r2_score(y_test, y_pred_scaled)
+    mae = mean_absolute_error(y_test_real, y_pred_real)
+    rmse = np.sqrt(mean_squared_error(y_test_real, y_pred_real))
+    print(f"R2 score on test set: {r2:.4f}")
+    print(f"R2 score on real prices: {r2_real:.4f}")
+    print(f"MAE score on test set: {mae:.4f}")
+    print(f"RMSE score on test set: {rmse:.4f}")
+    
+    plt.figure(figsize=(12,6))
+
+    # Plot real values
+    plt.plot(y_test_real, label='Real Prices', color='black', linewidth=1)
+
+    # Plot predicted values
+    plt.plot(y_pred_real, label='Predicted Prices', color='red', alpha=0.7)
+
+    plt.title('Predicted vs Real Prices')
+    plt.xlabel('Sample index')
+    plt.ylabel('Price')
+    plt.legend()
+    plt.show()
+        
 
     model.save('./models/stock_lstm_model.keras')
 
