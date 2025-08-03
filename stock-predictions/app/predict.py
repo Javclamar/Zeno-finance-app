@@ -18,7 +18,7 @@ def predict_new_data():
 
     # Load the model, scalers and encoders used in training to ensure cohesion
     N = 60
-    columns = ['Open', 'Close', 'High', 'Low', 'Volume', 'Days_until_next_close']
+    columns = ['Open', 'Close', 'High', 'Low', 'Volume', 'RSI', 'SMA_20', 'Days_until_next_close']
 
     if os.path.exists(PREDICTIONS_PATH):
         with open(PREDICTIONS_PATH, 'r') as f:
@@ -44,6 +44,7 @@ def predict_new_data():
 
     for ticker in df['Ticker'].unique():
         df_ticker = df[df['Ticker'] == ticker].copy().sort_values('Date') # Sort by date the data of the ticker
+        print(df_ticker.head())
 
         if len(df_ticker) < N:
             print(f"⚠️ Not enough data for {ticker}")

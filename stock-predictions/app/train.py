@@ -31,7 +31,7 @@ def train():
 
 
 
-    model = build_model(60, num_tickers=num_tickers, num_features=6)
+    model = build_model(60, num_tickers=num_tickers, num_features=8)
 
     print(f"X shape: {X_seq.shape}")
     print(f"y shape: {y.shape}")
@@ -62,12 +62,12 @@ def train():
         ticker = le.inverse_transform([ticker_id])[0]
         scaler = scalers[ticker]
 
-        dummy_pred = np.zeros((1, 7))
+        dummy_pred = np.zeros((1, 9))
         dummy_pred[0, -1] = y_pred_scaled[i].item()
         pred_real = scaler.inverse_transform(dummy_pred)[0, -1]
         y_pred_real.append(pred_real)
 
-        dummy_true = np.zeros((1, 7))
+        dummy_true = np.zeros((1, 9))
         dummy_true[0, -1] = y_test[i].item()
         true_real = scaler.inverse_transform(dummy_true)[0, -1]
         y_test_real.append(true_real)

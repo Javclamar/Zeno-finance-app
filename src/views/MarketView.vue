@@ -23,7 +23,7 @@
         <div class='prediction-title'>Prediction for next close</div>
         <div class='prediction-value' v-if="predictions[selectedStock]"> {{ predictions[selectedStock as
           string].toFixed(3)
-        }}$
+          }}$
         </div>
       </div>
     </div>
@@ -37,13 +37,14 @@ import { onMounted, ref, watch } from 'vue';
 
 type Predictions = Record<string, number>;
 
-const token = localStorage.getItem('token')
-const stocks = ['AAPL', 'MSFT', 'GOOG', 'AMZN', 'META', 'TSLA', 'NFLX', 'NVDA', 'JPM', 'BAC', 'SPY', 'QQQ']
-const times = ['1 month', '3 months', '1 year']
+const token = localStorage.getItem('token');
+const stocks = ['AAPL', 'MSFT', 'GOOG', 'AMZN', 'META', 'TSLA', 'NFLX', 'NVDA', 'JPM', 'BAC', 'SPY', 'QQQ'];
+const times = ['1 month', '3 months', '1 year'];
 const selectedStock = ref('AAPL');
-const selectedTime = ref(30)
+const selectedTime = ref(30);
 const predictions = ref<Predictions>({});
-const currentPrice = ref()
+const currentPrice = ref();
+const news = ref([]);
 
 function toggleStock(stock: string) {
   selectedStock.value = stock
@@ -101,9 +102,24 @@ async function getCurrentPrice(ticker: string) {
   }
 }
 
+async function getNews() {
+  try {
+    const response = await axios.get('/api/stocks/stock-news', {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    })
+    news.value = response.data
+  } catch (error) {
+    console.error('Error fetching news for today', error)
+  }
+}
+
 onMounted(() => {
   getPredictions()
   getCurrentPrice(selectedStock.value)
+  getNews()
 })
 
 watch(selectedStock, () => {

@@ -6,7 +6,9 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from datetime import datetime, timedelta
 from alpaca.data.historical.stock import StockHistoricalDataClient
+from alpaca.data.historical.news import NewsClient
 from alpaca.data.requests import StockBarsRequest
+from alpaca.data.requests import NewsRequest
 from alpaca.data.timeframe import TimeFrame
 import os
 from dotenv import load_dotenv
@@ -22,38 +24,6 @@ HISTORICAL_DATA_PATH = os.path.join(BASE_DIR, "..", "data", "historical_stock_da
 SECRET_KEY = os.getenv('SECRET')
 API_KEY = os.getenv('KEY')
 
-# Downloads the data used to train the model, this will be used in training
-def download_historical_data():
-
-    data = yf.download(tickers, start='2020-01-01', group_by='ticker')
-    dfs = []
-    for ticker in tickers:
-        df = data[ticker].copy()
-        df['Ticker'] = ticker
-        df['Date'] = df.index
-        dfs.append(df.reset_index(drop=True))
-    df_all = pd.concat(dfs)
-    df_all.sort_values(['Ticker', 'Date'], inplace=True)
-    df_all.to_csv(HISTORICAL_DATA_PATH, index=False)
-    print("✅ Data saved to historical_stock_data.csv")
-
-# Downloads the data used to make predictions. This could be swapped with a query to a MongoDB in the feature so we dont have 2 different datasets
-def download_recent_data():
-    start = datetime.today().date() - timedelta(days=100)
-    start_str =  start.strftime('%Y-%m-%d')
-
-    data = yf.download(tickers, start=start_str, group_by='ticker')
-    dfs = []
-    for ticker in tickers:
-        df = data[ticker].copy()
-        df['Ticker'] = ticker
-        df['Date'] = df.index
-        dfs.append(df.reset_index(drop=True))
-    df_all = pd.concat(dfs)
-    df_all.sort_values(['Ticker', 'Date'], inplace=True)
-    df_all.to_csv(NEW_DATA_PATH, index=False)
-    print("✅ Data saved to new_stock_data.csv")
-
 # Preprocessing of the data, scaling, encoding and sorting by ticker and date to create the time-series for each ticker
 def preprocessing(csv_path):
     df = pd.read_csv(csv_path)
@@ -64,10 +34,11 @@ def preprocessing(csv_path):
     df['Days_until_next_close'] = (df['Date'].shift(-1)- df['Date']).dt.days
     df['Day_of_the_week'] = df['Date'].dt.dayofweek
     df.dropna(inplace=True)
+    print(df.head())
 
     df_scaled = []
     scalers = {}
-    columns = ['Open', 'Close', 'High', 'Low', 'Volume', 'Days_until_next_close', 'Target']
+    columns = ['Open', 'Close', 'High', 'Low', 'Volume', 'RSI', 'SMA_20', 'Days_until_next_close', 'Target']
 
     # Scale the data by ticker, since the values can differ a lot depending on the ticker we cant scale all at once
     for ticker in df['Ticker'].unique():
@@ -91,7 +62,7 @@ def preprocessing(csv_path):
     return df_scaled, scalers, le
 
 # Creates a N days sequence of data and returns the X df( Values ), y df( Target ) and tickers_labels
-def create_sequences(df, N=60, columns=['Open', 'Close', 'High', 'Low', 'Volume', 'Days_until_next_close'], target='Target'):
+def create_sequences(df, N=60, columns=['Open', 'Close', 'High', 'Low', 'Volume', 'RSI', 'SMA_20', 'Days_until_next_close'], target='Target'):
     X_seq, X_dow, y, ticker_ids = [], [], [], []
 
     for ticker in df['Ticker'].unique():
@@ -164,6 +135,9 @@ def get_historical_data_alpaca():
         "Date": bar.timestamp.date().isoformat()
     } for bar in ticker_bars])
         
+        df['RSI'] = ta.rsi(df['Close'], length=14)
+        df['SMA_20'] = ta.sma(df['Close'], length=20)
+        df.dropna(inplace=True)
         df.sort_values('Date', inplace=True)
         dfs.append(df)
         
@@ -173,7 +147,7 @@ def get_historical_data_alpaca():
 
 def get_recent_data_alpaca():
 
-    start_date = datetime.today().date() - timedelta(days=100)
+    start_date = datetime.today().date() - timedelta(days=120)
 
     client = StockHistoricalDataClient(
         api_key=API_KEY,
@@ -202,12 +176,40 @@ def get_recent_data_alpaca():
         "Date": bar.timestamp.date().isoformat()
     } for bar in ticker_bars])
         
+        df['RSI'] = ta.rsi(df['Close'], length=14)
+        df['SMA_20'] = ta.sma(df['Close'], length=20)
+        df.dropna(inplace=True)
         df.sort_values('Date', inplace=True)
         dfs.append(df)
         
     final_df = pd.concat(dfs, ignore_index=True)
     final_df.sort_values(['Ticker', 'Date'], inplace=True)
     final_df.to_csv(NEW_DATA_PATH, index=False)
+    
+def get_stock_news():
+    
+    client = NewsClient(
+        api_key=API_KEY,
+        secret_key=SECRET_KEY
+    )
+    
+    request_params = NewsRequest(
+        end=datetime.today().date(),
+        symbols='AAPL,MSFT,GOOG,AMZN,META,TSLA,NFLX,NVDA,JPM,BAC,SPY,QQQ',
+        limit=2
+    )
+    
+    news_data = client.get_news(request_params)
+    filtered_news = []
+    for article in news_data['news']:
+        filtered_news.append({
+            "headline": article.headline,
+            "summary": article.summary,
+            "images": article.images[1],   
+            "source": article.source
+        })
+    
+    return {"data": filtered_news, "count": len(filtered_news)}
 
 
 
