@@ -10,9 +10,9 @@ import json
 def predict_new_data():
 
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    MODEL_PATH = os.path.join(BASE_DIR, "..", "models", "stock_lstm_model.keras")
-    SCALER_PATH = os.path.join(BASE_DIR, "..", "models", "scalers.pkl")
-    ENCODER_PATH = os.path.join(BASE_DIR, "..", "models", "label_encoder.pkl")
+    MODEL_PATH = os.path.join(BASE_DIR, "..", "lstm-utils", "stock_lstm_model.keras")
+    SCALER_PATH = os.path.join(BASE_DIR, "..", "lstm-utils", "scalers.pkl")
+    ENCODER_PATH = os.path.join(BASE_DIR, "..", "lstm-utils", "label_encoder.pkl")
     NEW_DATA_PATH = os.path.join(BASE_DIR, "..", "data", "new_stock_data.csv")
     PREDICTIONS_PATH = os.path.join(BASE_DIR, "..", "data", "latest_predictions.json")
 

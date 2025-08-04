@@ -31,5 +31,5 @@ coverage
 
 test-results/
 playwright-report/
-stock-predictions/venv/
-stock-predictions/.env
+lstm_backend/venv*
+lstm_backend/.env*

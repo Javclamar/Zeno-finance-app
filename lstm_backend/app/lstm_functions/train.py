@@ -1,5 +1,5 @@
-from app.data import preprocessing, create_sequences, get_historical_data_alpaca, get_recent_data_alpaca
-from app.model import build_model
+from app.lstm_functions.data import preprocessing, create_sequences, get_historical_data_alpaca, get_recent_data_alpaca
+from app.lstm_functions.model import build_model
 import pickle
 import os
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 NEW_DATA_PATH = os.path.join(BASE_DIR, "..", "data", "new_stock_data.csv")
 HISTORICAL_DATA_PATH = os.path.join(BASE_DIR, "..", "data", "historical_stock_data.csv")
+LSTM_UTILS = os.path.join(BASE_DIR, '..', 'lstm_utils')
 
 
 def train():
@@ -37,12 +38,12 @@ def train():
     print(f"y shape: {y.shape}")
 
     # Save the scaler and encoder to use for the predictions inverse scaling and encoding
-    with open('models/scalers.pkl', 'wb') as f:
+    with open(os.path.join(LSTM_UTILS, 'scalers.pkl'), 'wb') as f:
         pickle.dump(scalers, f)
 
-    with open('models/label_encoder.pkl', 'wb') as f:
+    with open(os.path.join(LSTM_UTILS, 'label_encoder.pkl'), 'wb') as f:
         pickle.dump(le, f)
-
+        
     model.fit(
         [X_train, ticker_train, X_dow_train], y_train,
         validation_data=([X_test, ticker_test, X_dow_test], y_test),
@@ -97,7 +98,7 @@ def train():
     plt.show()
         
 
-    model.save('./models/stock_lstm_model.keras')
+    model.save(os.path.join(LSTM_UTILS, 'stock_lstm_model.keras'), 'wb')
 
 if __name__ == "__main__":
     train()
