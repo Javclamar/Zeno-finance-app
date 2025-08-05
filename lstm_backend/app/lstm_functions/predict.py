@@ -4,16 +4,19 @@ import pickle
 import pandas as pd
 import numpy as np
 import json
+from app.lstm_functions.data import load_stock_data
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.db.session import async_session 
+import asyncio
 
 
 # Function used to predict the next day close for the tickers in the dataset
-def predict_new_data():
+async def predict_new_data(db: AsyncSession):
 
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    MODEL_PATH = os.path.join(BASE_DIR, "..", "lstm-utils", "stock_lstm_model.keras")
-    SCALER_PATH = os.path.join(BASE_DIR, "..", "lstm-utils", "scalers.pkl")
-    ENCODER_PATH = os.path.join(BASE_DIR, "..", "lstm-utils", "label_encoder.pkl")
-    NEW_DATA_PATH = os.path.join(BASE_DIR, "..", "data", "new_stock_data.csv")
+    MODEL_PATH = os.path.join(BASE_DIR, "..", "lstm_utils", "stock_lstm_model.keras")
+    SCALER_PATH = os.path.join(BASE_DIR, "..", "lstm_utils", "scalers.pkl")
+    ENCODER_PATH = os.path.join(BASE_DIR, "..", "lstm_utils", "label_encoder.pkl")
     PREDICTIONS_PATH = os.path.join(BASE_DIR, "..", "data", "latest_predictions.json")
 
     # Load the model, scalers and encoders used in training to ensure cohesion
@@ -34,16 +37,18 @@ def predict_new_data():
         le = pickle.load(f)
 
     # Read the pre-downloaded csv and adds a dummy column
-    df = pd.read_csv(NEW_DATA_PATH)
+    df = await load_stock_data(db)
     df['Date'] = pd.to_datetime(df['Date'])
-    df['Target'] = 0
-    df['Days_until_next_close'] = (df['Date'].shift(-1)- df['Date']).dt.days
+    df = df.sort_values(by=['Ticker', 'Date'])
+    df['Target'] = df.groupby('Ticker')['Close'].shift(-1)
     df['Day_of_the_week'] = df['Date'].dt.dayofweek
+    print(df.head())
     df.dropna(inplace=True)
 
 
     for ticker in df['Ticker'].unique():
-        df_ticker = df[df['Ticker'] == ticker].copy().sort_values('Date') # Sort by date the data of the ticker
+        df_ticker = df[df['Ticker'] == ticker].copy().sort_values('Date')
+        df_ticker = df_ticker[df_ticker['Target'].notna()].iloc[-N:] # Sort by date the data of the ticker
         print(df_ticker.head())
 
         if len(df_ticker) < N:
@@ -54,9 +59,9 @@ def predict_new_data():
         scaler = scalers[ticker]
         scaled_vals = scaler.transform(df_ticker[columns + ['Target']])
         scaled_df = pd.DataFrame(scaled_vals, columns=columns + ['Target'])
-
-        # We take the last N rows (days)
-        seq = scaled_df[columns].values[-N:]
+        print(scaled_df.head())
+       
+        seq = scaled_df[columns].values
         seq = np.expand_dims(seq, axis=0) # The model expects a shape of (samples, length, num_features): seq has already (length, num_features) so we expand to (1, length, num_features)
 
         # We encode using the same LabelEncoder from training
@@ -89,5 +94,9 @@ def predict_new_data():
 
     return predictions
 
+async def main():
+    async with async_session() as db:
+        await predict_new_data(db)
+
 if __name__ == "__main__":
-    predict_new_data()
+    asyncio.run(main())

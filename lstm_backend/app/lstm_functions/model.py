@@ -1,7 +1,9 @@
 from keras.layers import Embedding, Input, LSTM, Dense, Dropout, Concatenate, RepeatVector, Flatten
 from keras.models import Model
 from keras.losses import Huber
+from keras import regularizers
 from keras import optimizers
+from keras.metrics import RootMeanSquaredError
 
 # Input:
 # N -> Number of days to predict the next days close
@@ -27,12 +29,14 @@ def build_model(N, num_tickers, num_features, ticker_emb_dim=8, dow_emb_dim=3):
 
     merged = Concatenate()([seq_input, ticker_repeated, dow_repeated])
 
-    x = LSTM(64)(merged)
+    x = LSTM(64, return_sequences=True, recurrent_dropout=0.2, kernel_regularizer=regularizers.l2(0.001))(merged)
+    x = Dropout(0.4)(x)
+    x = LSTM(32)(x)
     x = Dropout(0.2)(x)
     output = Dense(1)(x)
 
     model = Model(inputs=[seq_input, ticker_input, dow_input], outputs=output)
-    optimizer = optimizers.Adam(learning_rate=0.0001)
-    model.compile(optimizer=optimizer, loss=Huber())
-    print(model.summary())
+    optimizer = optimizers.Adam(learning_rate=0.0005)
+    model.compile(optimizer=optimizer, loss=Huber(), metrics=[RootMeanSquaredError()])
+
     return model

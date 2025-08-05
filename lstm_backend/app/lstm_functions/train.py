@@ -1,27 +1,31 @@
-from app.lstm_functions.data import preprocessing, create_sequences, get_historical_data_alpaca, get_recent_data_alpaca
+from app.lstm_functions.data import preprocessing, create_sequences, get_historical_data_alpaca
 from app.lstm_functions.model import build_model
 import pickle
 import os
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
+from keras.callbacks import ModelCheckpoint
+from keras.models import load_model
+from keras.losses import Huber
+from keras.metrics import RootMeanSquaredError
 import numpy as np
 import matplotlib.pyplot as plt
+from sqlalchemy.ext.asyncio import AsyncSession
+import asyncio
+from app.db.session import async_session 
 
 # Training ad saving of the LSTM model
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-NEW_DATA_PATH = os.path.join(BASE_DIR, "..", "data", "new_stock_data.csv")
-HISTORICAL_DATA_PATH = os.path.join(BASE_DIR, "..", "data", "historical_stock_data.csv")
 LSTM_UTILS = os.path.join(BASE_DIR, '..', 'lstm_utils')
 
 
-def train():
+async def train(db: AsyncSession):
 
-    get_historical_data_alpaca()
-    get_recent_data_alpaca()
-
-    df_scaled, scalers, le = preprocessing(HISTORICAL_DATA_PATH) # Returns the df, the scalers used for the unique tickers, and the label encoder used for the ticker encoding
+    df_scaled, scalers, le = await preprocessing(db) # Returns the df, the scalers used for the unique tickers, and the label encoder used for the ticker encoding
     X_seq, y, ticker_ids, X_dow = create_sequences(df_scaled) # Creates 60 days sequence used to predict the next days close, returning the X, y df
     num_tickers = len(le.classes_)
+    
+    print(df_scaled.head())
 
     # Train test splitting (needs to be done like this to dont shuffle the time series)
     split = int(0.8 * len(X_seq))
@@ -32,7 +36,7 @@ def train():
 
 
 
-    model = build_model(60, num_tickers=num_tickers, num_features=8)
+    model = build_model(60, num_tickers=num_tickers, num_features=7)
 
     print(f"X shape: {X_seq.shape}")
     print(f"y shape: {y.shape}")
@@ -44,13 +48,26 @@ def train():
     with open(os.path.join(LSTM_UTILS, 'label_encoder.pkl'), 'wb') as f:
         pickle.dump(le, f)
         
+    checkpoint_cb = ModelCheckpoint(
+    os.path.join(LSTM_UTILS, 'stock_lstm_model.keras'), # Save path
+    save_best_only=True,          # Only save if val_loss improves
+    monitor="val_root_mean_squared_error", # You can monitor other metrics too
+    mode="min"                    # Use 'min' for loss
+)
+    
     model.fit(
         [X_train, ticker_train, X_dow_train], y_train,
         validation_data=([X_test, ticker_test, X_dow_test], y_test),
-        epochs=20,
-        batch_size=32
+        epochs=15,
+        batch_size=32,
+        callbacks=[checkpoint_cb]
     )
     
+    model = load_model(os.path.join(LSTM_UTILS, 'stock_lstm_model.keras'),
+                       custom_objects={
+        'Huber': Huber,
+        'RootMeanSquaredError': RootMeanSquaredError
+    })
     # Predict on test set
     y_pred_scaled = model.predict([X_test, ticker_test, X_dow_test])
     
@@ -63,12 +80,12 @@ def train():
         ticker = le.inverse_transform([ticker_id])[0]
         scaler = scalers[ticker]
 
-        dummy_pred = np.zeros((1, 9))
+        dummy_pred = np.zeros((1, 8))
         dummy_pred[0, -1] = y_pred_scaled[i].item()
         pred_real = scaler.inverse_transform(dummy_pred)[0, -1]
         y_pred_real.append(pred_real)
 
-        dummy_true = np.zeros((1, 9))
+        dummy_true = np.zeros((1, 8))
         dummy_true[0, -1] = y_test[i].item()
         true_real = scaler.inverse_transform(dummy_true)[0, -1]
         y_test_real.append(true_real)
@@ -98,7 +115,9 @@ def train():
     plt.show()
         
 
-    model.save(os.path.join(LSTM_UTILS, 'stock_lstm_model.keras'), 'wb')
+async def main():
+    async with async_session() as db:
+        await train(db)
 
 if __name__ == "__main__":
-    train()
+    asyncio.run(main())

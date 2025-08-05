@@ -1,25 +1,30 @@
 from fastapi import FastAPI
-from app.predict import predict_new_data
-from app.train import train
-from app.data import get_stock_data, get_current_price, get_stock_news
+from app.lstm_functions.predict import predict_new_data
+from app.lstm_functions.train import train
+from app.lstm_functions.data import get_stock_data, get_current_price, get_stock_news
 from apscheduler.schedulers.background import BackgroundScheduler
+from app.db.session import async_session 
 
 app = FastAPI()
 scheduler = BackgroundScheduler()
+async def scheduled_tasks():
+    async with async_session() as db:
+        await train(db)
+        await train(db)
+        await predict_new_data(db)
 
-scheduler.add_job(train, 'cron', hour=2)
-scheduler.add_job(predict_new_data, 'cron', hour=3)
-scheduler.add_job(get_stock_news, 'cron', hour=4)
-scheduler.start()
+scheduler.add_job(scheduled_tasks, 'interval', hours=5)
 
 @app.get("/predictions")
-def getPredictions():
-    predictions = predict_new_data()
+async def getPredictions():
+    async with async_session() as db:
+        predictions = await predict_new_data(db)
     return {"predictions": predictions}
 
 @app.get("/stock-data")
-def getStockData(ticker: str, days: int):
-    stockData = get_stock_data(ticker, days)
+async def getStockData(ticker: str, days: int,):
+    async with async_session() as db:
+        stockData = await get_stock_data(ticker, days, db)
     return {"stockData": stockData}
 
 @app.get("/current-price")
