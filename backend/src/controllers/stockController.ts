@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { Request, Response } from 'express'
+import { searchStocksService } from '../services/stockService'
 
 export const stockPredictionsController = async (req: Request, res: Response) => {
   try {
@@ -53,7 +54,10 @@ export const stockCurrentPriceController = async (req: Request, res: Response) =
 
 export const stockNewsController = async (req: Request, res: Response) => {
   try {
-    const response = await axios.get('http://localhost:8000/stock-news')
+    const { ticker } = req.query
+    const response = await axios.get('http://localhost:8000/stock-news', {
+      params: { ticker },
+    })
     res.status(200).json(response.data)
   } catch (error) {
     if (error instanceof Error) {
@@ -61,5 +65,15 @@ export const stockNewsController = async (req: Request, res: Response) => {
     } else {
       res.status(400).json({ error: 'An unknown error occurred' })
     }
+  }
+}
+
+export const seacrhStockController = async (req: Request, res: Response) => {
+  try {
+    const searchTerm = req.query.search as string
+    const stocks = await searchStocksService(searchTerm)
+    res.status(200).json(stocks)
+  } catch (error) {
+    res.status(500).json({ message: error })
   }
 }

@@ -21,7 +21,7 @@ async def predict_new_data(db: AsyncSession):
 
     # Load the model, scalers and encoders used in training to ensure cohesion
     N = 60
-    columns = ['Open', 'Close', 'High', 'Low', 'Volume', 'RSI', 'SMA_20', 'Days_until_next_close']
+    columns = ['Open', 'Close', 'High', 'Low', 'Volume', 'RSI', 'SMA_20']
 
     if os.path.exists(PREDICTIONS_PATH):
         with open(PREDICTIONS_PATH, 'r') as f:
@@ -29,6 +29,7 @@ async def predict_new_data(db: AsyncSession):
         return predictions
     
     model = load_model(MODEL_PATH)
+    print(model.summary())
     predictions = {}
 
     with open(SCALER_PATH, 'rb') as f:

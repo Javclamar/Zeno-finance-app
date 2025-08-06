@@ -215,7 +215,7 @@ async def get_historical_data_alpaca(db: AsyncSession):
     await db.commit()
     
 # Gets recent stock newsfrom Alpaca API
-def get_stock_news():
+def get_stock_news(ticker: str):
     
     client = NewsClient(
         api_key=API_KEY,
@@ -224,8 +224,8 @@ def get_stock_news():
     
     request_params = NewsRequest(
         end=datetime.today().date(),
-        symbols='AAPL,MSFT,GOOG,AMZN,META,TSLA,NFLX,NVDA,JPM,BAC,SPY,QQQ',
-        limit=2
+        symbols=ticker,
+        limit=4
     )
     
     news_data = client.get_news(request_params)
@@ -234,8 +234,9 @@ def get_stock_news():
         filtered_news.append({
             "headline": article.headline,
             "summary": article.summary,
-            "images": article.images[1],   
-            "source": article.source
+            "images": article.images,   
+            "url": article.url
+            
         })
     
     return {"data": filtered_news, "count": len(filtered_news)}

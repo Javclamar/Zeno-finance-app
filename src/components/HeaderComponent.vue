@@ -48,8 +48,8 @@ function handleLogout() {
 
 <style scoped>
 .header {
-  position: fixed;
-  left: 0;
+  position: sticky;
+  top: 0;
   width: 100%;
   background-color: #212529;
   display: flex;

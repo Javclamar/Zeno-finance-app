@@ -58,7 +58,7 @@ async def train(db: AsyncSession):
     model.fit(
         [X_train, ticker_train, X_dow_train], y_train,
         validation_data=([X_test, ticker_test, X_dow_test], y_test),
-        epochs=15,
+        epochs=20,
         batch_size=32,
         callbacks=[checkpoint_cb]
     )
@@ -99,6 +99,9 @@ async def train(db: AsyncSession):
     print(f"R2 score on real prices: {r2_real:.4f}")
     print(f"MAE score on test set: {mae:.4f}")
     print(f"RMSE score on test set: {rmse:.4f}")
+    
+    with open(os.path.join(LSTM_UTILS, 'rmse.json'), 'wb') as f:
+        pickle.dump(rmse, f)
     
     plt.figure(figsize=(12,6))
 

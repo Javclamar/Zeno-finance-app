@@ -56,6 +56,7 @@ const chartData = ref({
 
 const chartOptions = ref({
   responsive: true,
+  maintainAspectRatio: false,
   plugins: {
     legend: {
       display: true
@@ -68,7 +69,9 @@ const chartOptions = ref({
       },
       ticks: {
         color: '#9DA7A9',
-        font: { family: 'AtkinsonHyperlegibleMono' }
+        font: { family: 'AtkinsonHyperlegibleMono' },
+        autoSkip: true,
+        maxTicksLimit: 15
       }
     },
     y: {

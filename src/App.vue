@@ -32,12 +32,8 @@ authStore.checkTokenValidity();
 }
 
 .main-content {
-  display: flex;
   flex: 1;
-  padding: 1rem;
   width: 100%;
   background-color: var(--fondo);
-  align-items: center;
-  height: fit-content;
 }
 </style>

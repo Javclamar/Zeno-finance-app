@@ -1,12 +1,13 @@
 import './assets/css/main.css'
 
+import { Chart, Filler } from 'chart.js'
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
-import { Chart, Filler } from 'chart.js'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
   faArrowDown,
+  faArrowRight,
   faArrowUp,
   faGear,
   faHome,
@@ -15,14 +16,23 @@ import {
   faWallet,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import Toast, { POSITION } from 'vue-toastification'
 import type { PluginOptions } from 'vue-toastification'
+import Toast, { POSITION } from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
 
 import App from './App.vue'
 import router from './router'
 
-library.add(faUser, faHome, faGear, faWallet, faArrowUp, faArrowDown, faMagnifyingGlass)
+library.add(
+  faUser,
+  faHome,
+  faGear,
+  faWallet,
+  faArrowUp,
+  faArrowDown,
+  faMagnifyingGlass,
+  faArrowRight,
+)
 const app = createApp(App)
 const pinia = createPinia()
 const options: PluginOptions = {
@@ -33,7 +43,7 @@ const options: PluginOptions = {
   draggable: true,
 }
 
-Chart.register(Filler);
+Chart.register(Filler)
 
 app.component('font-awesome-icon', FontAwesomeIcon)
 app.use(pinia)
