@@ -1,48 +1,110 @@
-# 💰 Personal Finance Tracker
+# Finance App
 
+A full-stack personal finance management platform with budgeting, transaction tracking, and stock price prediction using LSTM neural networks.
 
-Developed with Vue.js, Express.js and PostgreSQL connected through Prisma
+## Features
 
----
+- **User Authentication**: Secure login/register with JWT.
+- **Budget Management**: Create and track budgets.
+- **Transaction Tracking**: Add, search, and visualize income/expenses.
+- **Dashboard**: Interactive charts and summaries.
+- **Stock Prediction**: LSTM-based price forecasting (Python FastAPI backend).
+- **RESTful API**: Built with Express and Prisma ORM.
+- **Modern Frontend**: Vue 3 + Pinia + Chart.js.
 
-## 🚀 Functionalities
+## Project Structure
 
-✅ Login and Signup with Oauth (for example Google)  
-✅ Create new transactions, like incomes and expenses  
-✅ Clear visualization of transactions sorted by date or amount  
-✅ Intuitive dashboard to show the flow of your balance  
-✅ JWT security token for authorization and authentication  
-✅ Backend made with Node.js + Express and Prisma to connect the PostgreSQL database  
-✅ Frontend made with Vue.js and Pinia for global context  
-
----
-
-## 🛠 Technologies used
-
-- ![Vue.js](https://img.shields.io/badge/-Vue.js-4FC08D?style=flat-square&logo=vue.js)
-- ![Node.js](https://img.shields.io/badge/-Express.js-333333?style=flat-square&logo=node.js)
-- ![Prisma](https://img.shields.io/badge/-Prisma-3982CE?style=flat-square&logo=prisma)
-- ![OAuth](https://img.shields.io/badge/-OAuth2-00A1E5?style=flat-square&logo=oauth)
-- ![JWT](https://img.shields.io/badge/-JWT-black?style=flat-square&logo=json-web-tokens)
-- ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?style=flat-square&logo=typescript)
-
----
-
-## 📦 Instalación y uso
-
-Frontend on port 5173  
-Backend on port 3000
-
-1. Clone the repository
-```bash
-git clone https://github.com/Javclamar/Zave-finance-app.git
-cd Zave-finance-app
-````
-2. Start the frontend
-```bash
-npm run dev
 ```
-3. Start the backend
+finance-app/
+│
+├── backend/           # Node.js/Express/Prisma API
+│   ├── src/
+│   │   ├── controllers/
+│   │   ├── middlewares/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   └── app.ts
+│   └── prisma/
+│
+├── src/               # Vue 3 frontend
+│   ├── components/
+│   ├── views/
+│   ├── router/
+│   └── main.ts
+│
+├── lstm_backend/      # Python LSTM prediction service with FastAPI
+│   ├── app/
+│   │   ├── lstm_functions/
+│   │   ├── lstm_utils/
+│   │   └── main.py
+│   └── requirements.txt
+```
+
+## Getting Started
+
+### 1. Backend (Node.js/Express)
+
 ```bash
 cd backend
+npm install
+npx prisma migrate dev
 npm run dev
+```
+
+### 2. Frontend (Vue 3)
+
+```bash
+cd src
+npm install
+npm run dev
+```
+
+### 3. LSTM Prediction Service (Python FastAPI)
+
+```bash
+cd lstm_backend
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python app/main.py
+```
+To execute the training script (after installing the requirements and with the venv activated)  
+
+```bash
+cd lstm_backend
+python -m app.lstm_functions.train
+```
+To execute the predicting script (after installing the requirements and with the venv activated)  
+
+```bash
+cd lstm_backend
+python -m app.lstm_functions.predict
+```
+The training script is set to run everyday at 2am, but this would be in production since FastAPI needs to be running.  
+The predictions script is also set to run at the same time, but if you dont run it, loading the stocks section on the app will run the script
+
+## Environment Variables
+
+- **backend/.env**: Set your database URL, JWT_SECRET, PORT to run the backend, CLIENT_ID, CLIENT_SECRET and REDIRECT_URI for Google Oauth2.
+- **lstm_backend/.env**: Set your Alpaca API keys and DB connection.
+
+## Usage
+
+- Register/login to manage your finances (trough email and password if Google Oauth hasn't been set up).
+- Add transactions and budgets.
+- View charts and predictions on the dashboard.
+- Use the stock prediction feature for market insights.
+
+## Tech Stack
+
+- **Frontend**: Vue 3, Pinia, Chart.js, FontAwesome, TypeScript
+- **Backend**: Node.js, Express, Prisma, PostgreSQL, TypeScript
+- **ML Service**: FastAPI, Python, TensorFlow/Keras, scikit-learn, SQLAlchemy
+
+## License
+
+MIT
+
+---
+
+*For questions or contributions, open an issue or pull request!*
