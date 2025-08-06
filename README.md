@@ -66,9 +66,10 @@ cd lstm_backend
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
-python app/main.py
+cd app
+fastapi dev main.py
 ```
-To execute the training script (after installing the requirements and with the venv activated)  
+To execute the training script (after installing the requirements, the venv activated and the Alpaca API keys set up)  
 
 ```bash
 cd lstm_backend
@@ -80,7 +81,7 @@ To execute the predicting script (after installing the requirements and with the
 cd lstm_backend
 python -m app.lstm_functions.predict
 ```
-The training script is set to run everyday at 2am, but this would be in production since FastAPI needs to be running.  
+The training script is set to run everyday at 2am, but this would be in production since FastAPI needs to be running. 
 The predictions script is also set to run at the same time, but if you dont run it, loading the stocks section on the app will run the script
 
 ## Environment Variables
@@ -90,6 +91,7 @@ The predictions script is also set to run at the same time, but if you dont run 
 
 ## Usage
 
+- The model is trained wit data until the 06/08/2025, so running the training script is advised to get updated predictions 
 - Register/login to manage your finances (trough email and password if Google Oauth hasn't been set up).
 - Add transactions and budgets.
 - View charts and predictions on the dashboard.
