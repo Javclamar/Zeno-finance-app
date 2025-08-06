@@ -5,8 +5,13 @@
       <img src="/public/favicon.ico" alt="Zave" class="logo" />
     </div>
     <div class="center">
+      <button class="burger" @click="toggleMenu" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
       <nav role="navigation" aria-label="Main navigation">
-        <ul class="nav1">
+        <ul class="nav1" :class="{ open: menuOpen }">
           <li><router-link to="/">Dashboard</router-link></li>
           <li><router-link to="/transactions">Transactions</router-link></li>
           <li><router-link to="/budgets">Budgets</router-link></li>
@@ -36,150 +41,171 @@ import '@/assets/css/main.css';
 import router from '@/router';
 import { useAuthStore } from '@/stores/authStore';
 import { storeToRefs } from 'pinia';
+import { ref } from 'vue';
 
 const auth = useAuthStore();
 const { isLoggedIn } = storeToRefs(auth);
+const menuOpen = ref(false);
 
 function handleLogout() {
   auth.logout();
   router.push('/login');
 }
+
+function toggleMenu() {
+  menuOpen.value = !menuOpen.value;
+}
 </script>
 
 <style scoped>
 .header {
-  position: sticky;
-  top: 0;
-  width: 100%;
-  background-color: #212529;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 3rem;
-  z-index: 1000;
-}
-
-.left,
-.center,
-.right {
-  flex: 1;
   display: flex;
   align-items: center;
-
-}
-
-.left {
-  justify-content: flex-start;
-  padding: 0.5rem;
-}
-
-.right {
-  justify-content: flex-end;
-  padding: 0.5rem;
+  justify-content: space-between;
+  background: #212529;
+  color: var(--texto, #9DA7A9);
+  padding: 0.5rem 2rem;
+  box-shadow: 0 2px 8px #0002;
+  width: 100%;
+  font-family: 'AtkinsonHyperlegibleMono';
 }
 
 .logo {
-  width: 2.5rem;
-  max-width: 100%;
+  width: 40px;
+  height: 40px;
 }
 
-.nav1,
-.nav2 {
-  list-style: none;
+.center {
+  flex: 1;
   display: flex;
-  gap: 2rem;
-  border-radius: 1rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.burger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.burger span {
+  display: block;
+  width: 25px;
+  height: 3px;
+  background: var(--texto, #9DA7A9);
+  border-radius: 2px;
+  transition: 0.3s;
 }
 
 .nav1 {
-  justify-content: space-between;
-}
-
-
-
-.login-link {
-  color: var(--texto);
-  text-decoration: none;
-  padding: 0.5rem 1rem;
-}
-
-.signup-link {
-  align-items: center;
-  background-image: linear-gradient(144deg, #af40ff, #5b42f3 50%, #00ddeb);
-  border: 0;
-  border-radius: 8px;
-  box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
-  box-sizing: border-box;
-  color: #ffffff;
   display: flex;
-  font-size: 18px;
-  justify-content: center;
-  line-height: 1em;
-  max-width: 100%;
-  min-width: 140px;
-  padding: 3px;
+  gap: 4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav1 li a {
+  color: var(--texto, #9DA7A9);
   text-decoration: none;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: all 0.3s;
-  transform: scale(0.9);
-
+  font-weight: 500;
+  transition: color 0.2s;
 }
 
-.signup-link:active,
-.signup-link:hover {
-  outline: 0;
-  transform: scale(1);
+.nav1 li a:hover {
+  color: var(--accent, #fff);
 }
 
-.signup-link span {
-  background-color: rgb(5, 6, 45);
-  padding: 16px 24px;
-  border-radius: 6px;
-  width: 100%;
-  height: 100%;
-  transition: 300ms;
-}
-
-.texto {
-  color: var(--texto);
-  text-decoration: none;
-  font-family: 'AtkinsonHyperlegibleMono';
-  font-weight: bold;
-}
-
-.texto-blanco {
-  color: #ffff;
-  font-family: 'AtkinsonHyperlegibleMono';
-  text-decoration: none;
-  font-weight: bold
-}
-
-.nav1 a {
-  color: var(--texto);
-  text-decoration: none;
-  font-family: 'AtkinsonHyperlegibleMono';
-  font-weight: bold;
-  padding: 0.5rem 2rem;
-  border-radius: 4px;
-  float: left;
-}
-
-.nav1 a.active {
-  background-image: linear-gradient(144deg, #af40ff, #5b42f3 50%, #00ddeb);
+.right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .logout-button {
-  background-color: var(--fondo);
-  text-decoration: underline;
-  border: 0;
-  border-radius: 8px;
-  box-sizing: border-box;
-  color: #ffffff;
+  background: var(--accent, #9DA7A9);
+  color: #133034;
+  border: none;
   padding: 0.5rem 1rem;
-  margin: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-left: 1rem;
+}
+
+.logout-button:hover {
+  background: #fff;
+  color: #133034;
+}
+
+.nav2 {
+  display: flex;
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+.texto {
+  color: var(--texto, #9DA7A9);
+  text-decoration: none;
+  font-weight: normal;
+}
+
+.signup-link {
+  background-image: linear-gradient(144deg, #af40ff, #5b42f3 50%, #00ddeb);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}
+
+.signup-link .texto-blanco {
+  color: #FFFF;
+  text-decoration: none;
+  font-weight: normal;
+}
+
+.signup-link:hover {
+  scale: 1.05;
+  transition: scale 0.2s ease-in-out;
+}
+
+.signup-link .texto-blanco {
+  color: #FFFF;
+  text-decoration: none;
+  font-weight: normal;
+}
+
+
+@media (max-width: 900px) {
+  .nav1 {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    background: #212529;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 2rem;
+    display: none;
+    z-index: 10;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .nav1.open {
+    display: flex;
+  }
+
+  .burger {
+    display: flex;
+    margin: 1rem 0;
+  }
+
+  .center {
+    align-items: center;
+  }
 }
 </style>

@@ -35,5 +35,7 @@ authStore.checkTokenValidity();
   flex: 1;
   width: 100%;
   background-color: var(--fondo);
+  align-items: center;
+  display: flex;
 }
 </style>
