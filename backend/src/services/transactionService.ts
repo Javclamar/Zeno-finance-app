@@ -30,9 +30,31 @@ export async function createTransactionService(
         },
       },
     })
-    return transaction
+    if (amount.isNegative()) {
+      const existsBudget = await prisma.budget.findFirst({
+        where: {
+          userId: userId,
+          category: category as Category,
+          startDate: {
+            gte: date,
+          },
+          endDate: {
+            lte: date,
+          },
+        },
+      })
+      if (existsBudget) {
+        await prisma.budget.update({
+          where: { id: existsBudget.id },
+          data: {
+            spent: { increment: amount.abs() },
+          },
+        })
+      }
+      return transaction
+    }
   } catch (error) {
-    throw new Error(`Error creating income transaction: ${error}`)
+    throw new Error(error instanceof Error ? error.message : String(error))
   } finally {
     await prisma.$disconnect()
   }
@@ -47,7 +69,7 @@ export async function getDashboardTransactionsByUser(userId: number) {
     })
     return transactions
   } catch (error) {
-    throw new Error(`Error fetching dashboard transactions: ${error}`)
+    throw new Error(error instanceof Error ? error.message : String(error))
   } finally {
     await prisma.$disconnect()
   }
@@ -67,7 +89,7 @@ export async function getMonthlyTransactionsByUser(userId: number) {
     })
     return transactions
   } catch (error) {
-    throw new Error(`Error fetching monthly transactions: ${error}`)
+    throw new Error(error instanceof Error ? error.message : String(error))
   } finally {
     await prisma.$disconnect()
   }
@@ -92,7 +114,7 @@ export async function searchTransactionsByUser(userId: number, searchTerm: strin
 
     return transactions
   } catch (error) {
-    throw new Error(`Error searching transactions: ${error}`)
+    throw new Error(error instanceof Error ? error.message : String(error))
   }
 }
 
@@ -110,7 +132,7 @@ export async function getPaginatedTransactionsByUser(
     })
     return transactions
   } catch (error) {
-    throw new Error(`Error fetching paginated transactions: ${error}`)
+    throw new Error(error instanceof Error ? error.message : String(error))
   } finally {
     await prisma.$disconnect()
   }
@@ -136,7 +158,7 @@ export async function getMonthlyIncomeByUser(userId: number) {
     )
     return totalIncome
   } catch (error) {
-    throw new Error(`Error fetching monthly income: ${error}`)
+    throw new Error(error instanceof Error ? error.message : String(error))
   } finally {
     await prisma.$disconnect()
   }
@@ -162,7 +184,7 @@ export async function getMonthlySpendingByUser(userId: number) {
     )
     return totalSpending
   } catch (error) {
-    throw new Error(`Error fetching monthly spending: ${error}`)
+   throw new Error(error instanceof Error ? error.message : String(error))
   } finally {
     await prisma.$disconnect()
   }

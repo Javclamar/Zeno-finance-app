@@ -15,7 +15,7 @@
     <div class="message">Don't have an account yet? <router-link to="/register" class="link">Sign Up</router-link></div>
 
     <button class='google' @click="loginWithGoogle">
-      <img src="@/assets/images/google.png" alt="Google Icon">
+      <img src="/images/google.png" alt="Google Icon">
     </button>
   </div>
 </template>
@@ -50,7 +50,7 @@ const handleLogin = async () => {
       successMessage.value = 'Successfully logged in! Redirecting...';
       if (isLoggedIn.value) {
         setTimeout(() => {
-          router.push('/dashboard');
+          router.push('/');
         }, 1000);
       }
 

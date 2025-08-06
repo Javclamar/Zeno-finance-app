@@ -31,3 +31,5 @@ coverage
 
 test-results/
 playwright-report/
+lstm_backend/venv*
+lstm_backend/.env*

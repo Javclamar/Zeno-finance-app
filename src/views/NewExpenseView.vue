@@ -69,7 +69,7 @@ const handleSubmit = async () => {
       }
     });
     if (response.status === 200) {
-      router.push('/dashboard');
+      router.push('/');
     } else {
       console.error('Failed to add income:', response.data);
     }
@@ -154,6 +154,8 @@ const handleSubmit = async () => {
   font-size: 1rem;
   background-image: linear-gradient(144deg, #2c1620, #b94f41 50%, #642527);
   border: none;
+  cursor: pointer;
+  font-family: 'AtkinsonHyperlegibleMono';
 }
 
 .submit:hover {
@@ -166,6 +168,7 @@ const handleSubmit = async () => {
   text-align: center;
   margin-top: 1rem;
   background-color: #0000;
+  border: none;
 }
 
 .link {

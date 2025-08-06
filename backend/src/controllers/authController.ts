@@ -42,7 +42,7 @@ export const googleCallbackController = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Authorization code is required' })
     }
     const token = await exchangeGoogleCodeForToken(code)
-    res.status(200).redirect(`http://localhost:5173/dashboard?token=${token}`)
+    res.status(200).redirect(`http://localhost:5173/?token=${token}`)
   } catch (error) {
     if (error instanceof Error) {
       res.status(400).json({ error: error.message })

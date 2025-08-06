@@ -1,10 +1,10 @@
+import BudgetView from '@/views/BudgetView.vue'
 import DashboardView from '@/views/DashboardView.vue'
-import LandingView from '@/views/LandingView.vue'
 import LoginView from '@/views/LoginView.vue'
+import MarketView from '@/views/MarketView.vue'
 import NewExpenseView from '@/views/NewExpenseView.vue'
 import NewIncomeView from '@/views/NewIncomeView.vue'
 import RegisterView from '@/views/RegisterView.vue'
-import SettingsView from '@/views/SettingsView.vue'
 import TransactionsView from '@/views/TransactionsView.vue'
 
 import { useAuthStore } from '@/stores/authStore'
@@ -13,11 +13,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: LandingView,
-    },
     {
       path: '/login',
       name: 'login',
@@ -31,7 +26,7 @@ const router = createRouter({
       meta: { guestsOnly: true },
     },
     {
-      path: '/dashboard',
+      path: '/',
       name: 'dashboard',
       component: DashboardView,
       meta: { requiresAuth: true },
@@ -43,9 +38,9 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: '/settings',
-      name: 'settings',
-      component: SettingsView,
+      path: '/budgets',
+      name: 'budgets',
+      component: BudgetView,
       meta: { requiresAuth: true },
     },
     {
@@ -56,8 +51,14 @@ const router = createRouter({
     },
     {
       path: '/transactions/new/expense',
-      name: 'new-income',
+      name: 'new-expense',
       component: NewExpenseView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/market',
+      name: 'market',
+      component: MarketView,
       meta: { requiresAuth: true },
     },
   ],
@@ -76,7 +77,7 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.meta.guestsOnly && authStore.isLoggedIn) {
-    return next('/dashboard')
+    return next('/')
   }
 
   if (to.meta.requiresAuth && !authStore.isLoggedIn) {

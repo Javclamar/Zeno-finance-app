@@ -46,7 +46,7 @@ export const loginUserService = async (email: string, password: string) => {
   }
 
   if (!user.password) {
-    throw new Error('User does not have a password set')
+    throw new Error('User does not have a password set, login with Google instead or sign up with the same email')
   }
   const isPasswordValid = await bcrypt.compare(password, user.password)
 

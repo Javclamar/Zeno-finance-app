@@ -34,7 +34,7 @@ export const useAuthStore = defineStore('auth', {
         this.loginTime = now
         localStorage.setItem('loginTime', now)
         this.token = localStorage.getItem('token')
-        window.location.href = '/dashboard'
+        window.location.href = '/'
       } else {
         this.logout()
       }
