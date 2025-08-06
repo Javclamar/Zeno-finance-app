@@ -2,7 +2,7 @@
 <template>
   <header class="header">
     <div class="left">
-      <img src="/images/logo.svg" alt="Zave" class="logo" />
+      <img src="/public/favicon.ico" alt="Zave" class="logo" />
     </div>
     <div class="center">
       <nav role="navigation" aria-label="Main navigation">
