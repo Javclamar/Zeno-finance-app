@@ -29,6 +29,8 @@ authStore.checkTokenValidity();
   width: 100%;
   align-items: center;
   background-color: var(--fondo);
+  margin: 0;
+  padding: 0;
 }
 
 .main-content {
@@ -37,5 +39,7 @@ authStore.checkTokenValidity();
   background-color: var(--fondo);
   align-items: center;
   display: flex;
+  padding: 0;
+  margin: 0;
 }
 </style>

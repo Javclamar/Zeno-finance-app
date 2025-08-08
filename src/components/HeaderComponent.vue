@@ -12,10 +12,10 @@
       </button>
       <nav role="navigation" aria-label="Main navigation">
         <ul class="nav1" :class="{ open: menuOpen }">
-          <li><router-link to="/">Dashboard</router-link></li>
-          <li><router-link to="/transactions">Transactions</router-link></li>
-          <li><router-link to="/budgets">Budgets</router-link></li>
-          <li><router-link to="/market">Stocks</router-link></li>
+          <li><router-link to="/" @click="toggleMenu">Dashboard</router-link></li>
+          <li><router-link to="/transactions" @click="toggleMenu">Transactions</router-link></li>
+          <li><router-link to="/budgets" @click="toggleMenu">Budgets</router-link></li>
+          <li><router-link to="/market" @click="toggleMenu">Stocks</router-link></li>
         </ul>
       </nav>
     </div>

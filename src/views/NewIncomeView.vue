@@ -25,7 +25,7 @@
       </div>
     </form>
     <div class='back'>
-      <router-link to='/dashboard' class='link'>Back to Dashboard</router-link>
+      <router-link to='/' class='link'>Back to Dashboard</router-link>
     </div>
   </div>
 </template>
@@ -82,7 +82,6 @@ const handleSubmit = async () => {
 <style scoped>
 .income-container {
   margin: 0 auto;
-  margin-top: 5rem;
   max-width: 80%;
   padding: 2rem;
   background-color: #212529;
