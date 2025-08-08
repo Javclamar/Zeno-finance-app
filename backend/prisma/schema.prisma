@@ -51,8 +51,6 @@ model StockData {
   low       Decimal
   close     Decimal
   volume    BigInt
-  rsi       Decimal
-  sma20     Decimal
 
   @@unique([ticker, date])
   @@index([ticker, date])

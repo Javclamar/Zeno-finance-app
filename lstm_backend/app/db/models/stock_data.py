@@ -12,8 +12,6 @@ class StockData(Base):
     low = Column(Float)
     close = Column(Float)
     volume = Column(Integer)
-    rsi = Column(Float)
-    sma20 = Column(Float)
 
     def __repr__(self):
         return f"<StockData(ticker={self.ticker}, date={self.date}, close_price={self.close})>"

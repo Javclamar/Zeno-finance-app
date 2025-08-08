@@ -20,12 +20,12 @@ LSTM_UTILS = os.path.join(BASE_DIR, '..', 'lstm_utils')
 
 
 async def train(db: AsyncSession):
+    
+    await get_historical_data_alpaca(db)  # Fetches and saves historical data from Alpaca if not already present
 
     df_scaled, scalers, le = await preprocessing(db) # Returns the df, the scalers used for the unique tickers, and the label encoder used for the ticker encoding
     X_seq, y, ticker_ids, X_dow = create_sequences(df_scaled) # Creates 60 days sequence used to predict the next days close, returning the X, y df
     num_tickers = len(le.classes_)
-    
-    print(df_scaled.head())
 
     # Train test splitting (needs to be done like this to dont shuffle the time series)
     split = int(0.8 * len(X_seq))
@@ -55,10 +55,11 @@ async def train(db: AsyncSession):
     mode="min"                    # Use 'min' for loss
 )
     
+    
     model.fit(
         [X_train, ticker_train, X_dow_train], y_train,
         validation_data=([X_test, ticker_test, X_dow_test], y_test),
-        epochs=20,
+        epochs=25,
         batch_size=32,
         callbacks=[checkpoint_cb]
     )

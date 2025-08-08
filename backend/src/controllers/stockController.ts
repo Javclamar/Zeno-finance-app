@@ -74,6 +74,10 @@ export const seacrhStockController = async (req: Request, res: Response) => {
     const stocks = await searchStocksService(searchTerm)
     res.status(200).json(stocks)
   } catch (error) {
-    res.status(500).json({ message: error })
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message })
+    } else {
+      res.status(400).json({ error: 'An unknown error occurred' })
+    }
   }
 }
