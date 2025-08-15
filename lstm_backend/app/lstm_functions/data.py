@@ -69,16 +69,17 @@ async def preprocessing(db: AsyncSession):
     for ticker in df['Ticker'].unique():
         scaler = MinMaxScaler()
         df_ticker = df[df['Ticker'] == ticker].copy()
-        df_ticker.dropna(inplace=True)
+        
         df_ticker['RSI'] = ta.rsi(df_ticker['Close'], length=14)
         df_ticker['SMA_20'] = ta.sma(df_ticker['Close'], length=20)
-        df_ticker.dropna(inplace=True)
-        print("Columns after scaling:", df_ticker[columns].columns.tolist())
+        
         scaled_values = scaler.fit_transform(df_ticker[columns])
         
         df_ticker_scaled = pd.DataFrame(scaled_values, columns=columns, index=df_ticker['Date'])
         df_ticker_scaled['Ticker'] = df_ticker['Ticker'].values
         df_ticker_scaled['Day_of_the_week'] = df_ticker['Day_of_the_week'].values
+        
+        df_ticker_scaled.dropna(inplace=True)
         
         df_scaled.append(df_ticker_scaled)
         scalers[ticker] = scaler

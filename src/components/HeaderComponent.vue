@@ -2,7 +2,7 @@
 <template>
   <header class="header">
     <div class="left">
-      <img src="/public/favicon.ico" alt="Zave" class="logo" />
+      <img src="/favicon.ico" alt="Zave" class="logo" />
     </div>
     <div class="center">
       <button class="burger" @click="toggleMenu" aria-label="Toggle navigation">
@@ -181,6 +181,10 @@ function toggleMenu() {
 
 
 @media (max-width: 900px) {
+  .header {
+    flex-direction: row;
+  }
+
   .nav1 {
     position: absolute;
     top: 60px;
@@ -206,6 +210,7 @@ function toggleMenu() {
 
   .center {
     align-items: center;
+    margin-left: 3.5rem;
   }
 }
 </style>

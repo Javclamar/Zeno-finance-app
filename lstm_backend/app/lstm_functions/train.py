@@ -34,8 +34,6 @@ async def train(db: AsyncSession):
     ticker_train, ticker_test = ticker_ids[:split], ticker_ids[split:]
     X_dow_train, X_dow_test = X_dow[:split], X_dow[split:]
 
-
-
     model = build_model(60, num_tickers=num_tickers, num_features=7)
 
     print(f"X shape: {X_seq.shape}")
