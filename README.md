@@ -2,6 +2,8 @@
 
 A full-stack personal finance management platform with budgeting, transaction tracking, and stock price prediction using LSTM neural networks.
 
+
+
 ## Features
 
 - **User Authentication**: Secure login/register with JWT.
@@ -38,7 +40,9 @@ finance-app/
 │   │   ├── lstm_utils/
 │   │   └── main.py
 │   └── requirements.txt
-```
+```  
+
+Connected to a PostgreSQL database
 
 ## Getting Started
 
