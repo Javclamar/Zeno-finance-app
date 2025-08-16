@@ -7,10 +7,25 @@ A full-stack personal finance management platform with budgeting, transaction tr
 ## Features
 
 - **User Authentication**: Secure login/register with JWT.
+
+  <img width="1905" height="851" alt="image" src="https://github.com/user-attachments/assets/f58cc78d-5553-40c3-8151-d0c380c0bfd5" />
+
 - **Budget Management**: Create and track budgets.
+
+<img width="1651" height="647" alt="image" src="https://github.com/user-attachments/assets/92363e5b-15bc-4550-ab68-54dbeca1e5d9" />
+
 - **Transaction Tracking**: Add, search, and visualize income/expenses.
+
+<img width="1371" height="789" alt="image" src="https://github.com/user-attachments/assets/ec1bd589-383c-4d20-b9ba-9078ac3f3e4d" />
+
 - **Dashboard**: Interactive charts and summaries.
+
+  <img width="1908" height="778" alt="image" src="https://github.com/user-attachments/assets/fdcf1e64-61f5-4826-8568-923267befa64" />
+
 - **Stock Prediction**: LSTM-based price forecasting (Python FastAPI backend).
+
+  <img width="1897" height="795" alt="image" src="https://github.com/user-attachments/assets/37f9902c-ad5c-4882-b72e-d0470ad0c019" />
+
 - **RESTful API**: Built with Express and Prisma ORM.
 - **Modern Frontend**: Vue 3 + Pinia + Chart.js.
 
