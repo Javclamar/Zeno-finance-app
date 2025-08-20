@@ -3,7 +3,7 @@ from keras.models import Model
 from keras.losses import Huber
 from keras import regularizers
 from keras import optimizers
-from keras.metrics import RootMeanSquaredError
+from keras.metrics import RootMeanSquaredError, MeanAbsolutePercentageError
 
 # Input:
 # N -> Number of days to predict the next days close
@@ -18,6 +18,7 @@ def build_model(N, num_tickers, num_features, ticker_emb_dim=8, dow_emb_dim=3):
     ticker_input = Input(shape=(1,), name='ticker_input')
     ticker_emb = Embedding(input_dim=num_tickers, output_dim=ticker_emb_dim, name='ticker_emb')(ticker_input)
     ticker_emb = Flatten()(ticker_emb)
+    ticker_emb = Dropout(0.2)(ticker_emb)
     ticker_repeated = RepeatVector(N)(ticker_emb)
 
     dow_input = Input(shape=(1,), name='dow_input')
@@ -28,14 +29,18 @@ def build_model(N, num_tickers, num_features, ticker_emb_dim=8, dow_emb_dim=3):
 
     merged = Concatenate()([seq_input, ticker_repeated, dow_repeated])
 
-    x = LSTM(64, return_sequences=True, recurrent_dropout=0.2, kernel_regularizer=regularizers.l2(0.001))(merged)
-    x = Dropout(0.4)(x)
-    x = LSTM(32)(x)
+    x = LSTM(64, return_sequences=True, dropout=0.2, recurrent_dropout=0.2, kernel_regularizer=regularizers.l2(0.001))(merged)
     x = Dropout(0.3)(x)
-    output = Dense(1)(x)
+    x = LSTM(32)(x)
+    x = Dropout(0.2)(x)
+    
+    dense = Dense(64, activation='relu')(x)
+    dense = Dropout(0.2)(dense)
+    dense = Dense(32, activation='relu')(dense)
+    output = Dense(1)(dense)
 
     model = Model(inputs=[seq_input, ticker_input, dow_input], outputs=output)
     optimizer = optimizers.Adam(learning_rate=0.0005)
-    model.compile(optimizer=optimizer, loss=Huber(), metrics=[RootMeanSquaredError()])
+    model.compile(optimizer=optimizer, loss=Huber(), metrics=[RootMeanSquaredError(), MeanAbsolutePercentageError()])
 
     return model

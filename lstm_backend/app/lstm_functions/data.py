@@ -5,11 +5,8 @@ import pandas_ta as ta
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from datetime import datetime, timedelta
-from alpaca.data.historical.stock import StockHistoricalDataClient
 from alpaca.data.historical.news import NewsClient
-from alpaca.data.requests import StockBarsRequest
 from alpaca.data.requests import NewsRequest
-from alpaca.data.timeframe import TimeFrame
 import os
 from dotenv import load_dotenv
 from app.db.models.stock_data import StockData
@@ -149,12 +146,8 @@ def get_current_price(ticker):
     else:
         return {"ticker": ticker, "price": None, "error": "No data found"}
 
-# Gets historical data from Alpaca API and saves it to a CSV file
-async def get_historical_data_alpaca(db: AsyncSession):
-        client = StockHistoricalDataClient(
-            api_key=API_KEY,
-            secret_key=SECRET_KEY
-        )
+# Gets historical data from yfinance
+async def get_historical_data(db: AsyncSession):
         
         # Calculate date range
         current_date = datetime.now().date()
@@ -181,43 +174,21 @@ async def get_historical_data_alpaca(db: AsyncSession):
         if start_date >= end_date:
             print("No new data to fetch - database is up to date")
             return
-            
-        request_params = StockBarsRequest(
-            symbol_or_symbols=tickers,
-            timeframe=TimeFrame.Day,
-            start=start_date,
-            end=end_date,
-        )
         
         try:
-            bars = client.get_stock_bars(request_params)
+            historical_data = yf.download(tickers, start=start_date, end=end_date, progress=True, group_by='ticker', threads=True)
 
             dfs = []
+            
             for ticker in tickers:
-                if ticker not in bars.data:
+                if ticker not in historical_data.columns.levels[0]:
                     print(f"No data for ticker {ticker}")
                     continue
-                    
-                ticker_bars = bars.data[ticker]
-                print(f"Processing {len(ticker_bars)} bars for {ticker}")
-                
-                df = pd.DataFrame([{
-                    "Open": float(bar.open),
-                    "High": float(bar.high),
-                    "Low": float(bar.low),
-                    "Close": float(bar.close),
-                    "Volume": float(bar.volume),
-                    "Ticker": ticker,
-                    "Date": bar.timestamp.date().isoformat()
-                } for bar in ticker_bars])
-                
-                if df.empty:
-                    print(f"Empty DataFrame for {ticker}")
-                    continue
-                    
-                if not df.empty:
-                    dfs.append(df)
-                    print(f"Added {len(df)} rows for {ticker}")
+
+                df = historical_data[ticker].reset_index()
+                df['Ticker'] = ticker
+                dfs.append(df)
+                print(f"Added {len(df)} rows for {ticker}")
             
             if not dfs:
                 print("No data frames to concatenate")
@@ -225,7 +196,8 @@ async def get_historical_data_alpaca(db: AsyncSession):
                 
             final_df = pd.concat(dfs, ignore_index=True)
             print(f"Created final DataFrame with {len(final_df)} rows")
-            
+
+            # Prepare rows for insertion
             rows = [{
                 "ticker": row['Ticker'],
                 "date": pd.to_datetime(row['Date']).date(),
@@ -236,19 +208,17 @@ async def get_historical_data_alpaca(db: AsyncSession):
                 "volume": int(row['Volume']),
             } for _, row in final_df.iterrows()]
 
+            # Insert in batches
             BATCH_SIZE = 500
-
             for i in range(0, len(rows), BATCH_SIZE):
                 batch = rows[i:i + BATCH_SIZE]
-
                 stmt = insert(StockData).values(batch)
                 stmt = stmt.on_conflict_do_nothing(index_elements=['ticker', 'date'])
-
                 await db.execute(stmt)
 
             await db.commit()
-            print(f"Committed {len(batch)} rows")
-    
+            print(f"Committed {len(rows)} rows in total")
+
         except Exception as e:
             print(f"Error fetching data: {str(e)}")
             raise
