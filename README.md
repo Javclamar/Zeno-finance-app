@@ -73,7 +73,7 @@ npm run dev
 ### 2. Frontend (Vue 3)
 
 ```bash
-cd src
+cd ..
 npm install
 npm run dev
 ```
@@ -82,9 +82,7 @@ npm run dev
 
 ```bash
 cd lstm_backend
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
+conda env create -f environment.yml
 cd app
 fastapi dev main.py
 ```
