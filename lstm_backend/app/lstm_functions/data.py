@@ -90,7 +90,7 @@ async def preprocessing(db: AsyncSession):
     return df_scaled, scalers, le
 
 # Creates a N days sequence of data and returns the X df( Values ), y df( Target ) and tickers_labels
-def create_sequences(df, N=60, columns=['Open', 'Close', 'High', 'Low', 'Volume', 'RSI', 'SMA_20'], target='Target'):
+def create_sequences(df, sequence_length=60, columns=['Open', 'Close', 'High', 'Low', 'Volume', 'RSI', 'SMA_20'], target='Target'):
     X_seq, X_dow, y, ticker_ids = [], [], [], []
 
     for ticker in df['Ticker'].unique():
@@ -99,13 +99,13 @@ def create_sequences(df, N=60, columns=['Open', 'Close', 'High', 'Low', 'Volume'
         targets = df_ticker[target].values
         dow_values = df_ticker['Day_of_the_week'].values
 
-        for i in range(len(data) - N):
-            seq = data[i:i+N]
-            dow = dow_values[i+N-1] 
+        for i in range(len(data) - sequence_length):
+            seq = data[i:i+sequence_length]
+            dow = dow_values[i+sequence_length-1] 
 
             X_seq.append(seq)
             X_dow.append(dow)
-            y.append(targets[i+N])
+            y.append(targets[i+sequence_length])
             ticker_ids.append(ticker)  # already encoded
 
     return (
@@ -161,7 +161,7 @@ async def get_historical_data(db: AsyncSession):
         
         # If we have data, start from the last date + 1 day
         start_date = min(
-            (last_date + timedelta(days=1) if last_date else datetime(2015, 1, 1).date()),
+            (last_date + timedelta(days=1) if last_date else datetime(2010, 1, 1).date()),
             current_date
         ).isoformat()
         

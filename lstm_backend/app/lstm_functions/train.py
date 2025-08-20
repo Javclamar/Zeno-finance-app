@@ -24,7 +24,7 @@ async def train(db: AsyncSession):
     await get_historical_data(db)  # Fetches and saves historical data from yfinance if not already present
 
     df_scaled, scalers, le = await preprocessing(db) # Returns the df, the scalers used for the unique tickers, and the label encoder used for the ticker encoding
-    X_seq, y, ticker_ids, X_dow = create_sequences(df_scaled) # Creates 60 days sequence used to predict the next days close, returning the X, y df
+    X_seq, y, ticker_ids, X_dow = create_sequences(df_scaled, sequence_length=90) # Creates 60 days sequence used to predict the next days close, returning the X, y df
     num_tickers = len(le.classes_)
 
     # Train test splitting (needs to be done like this to dont shuffle the time series)
@@ -34,7 +34,7 @@ async def train(db: AsyncSession):
     ticker_train, ticker_test = ticker_ids[:split], ticker_ids[split:]
     X_dow_train, X_dow_test = X_dow[:split], X_dow[split:]
 
-    model = build_model(60, num_tickers=num_tickers, num_features=7)
+    model = build_model(90, num_tickers=num_tickers, num_features=7)
 
     print(f"X shape: {X_seq.shape}")
     print(f"y shape: {y.shape}")
