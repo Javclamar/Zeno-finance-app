@@ -196,6 +196,7 @@ async def get_historical_data(db: AsyncSession):
                 
             final_df = pd.concat(dfs, ignore_index=True)
             print(f"Created final DataFrame with {len(final_df)} rows")
+            final_df.dropna(inplace=True)
 
             # Prepare rows for insertion
             rows = [{
