@@ -3,6 +3,8 @@
 #app {
   font-weight: normal;
   width: 100%;
+  margin: 0;
+  padding: 0;
   background-color: var(--fondo);
   display: flex;
   flex-direction: column;

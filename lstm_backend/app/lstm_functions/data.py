@@ -5,11 +5,8 @@ import pandas_ta as ta
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from datetime import datetime, timedelta
-from alpaca.data.historical.stock import StockHistoricalDataClient
 from alpaca.data.historical.news import NewsClient
-from alpaca.data.requests import StockBarsRequest
 from alpaca.data.requests import NewsRequest
-from alpaca.data.timeframe import TimeFrame
 import os
 from dotenv import load_dotenv
 from app.db.models.stock_data import StockData
@@ -27,9 +24,10 @@ HISTORICAL_DATA_PATH = os.path.join(BASE_DIR, "..", "data", "historical_stock_da
 SECRET_KEY = os.getenv('SECRET')
 API_KEY = os.getenv('KEY')
 
-async def load_stock_data(db: AsyncSession):
+async def load_stock_data(db: AsyncSession, days):
     result = await db.execute(
         select(StockData).order_by(StockData.date.desc())
+        .limit(days * len(tickers))
     )
     stocks = result.scalars().all() 
     
@@ -43,8 +41,6 @@ async def load_stock_data(db: AsyncSession):
             "Low": stock.low,
             "Close": stock.close,
             "Volume": stock.volume,
-            "RSI": stock.rsi,
-            "SMA_20": stock.sma20
         })
         
     df = pd.DataFrame(data)
@@ -53,7 +49,7 @@ async def load_stock_data(db: AsyncSession):
 
 # Preprocessing of the data, scaling, encoding and sorting by ticker and date to create the time-series for each ticker
 async def preprocessing(db: AsyncSession):
-    df = await load_stock_data(db)
+    df = await load_stock_data(db, 3650)
 
     # Create the target value, that  is the Close value of the next day (row in this case)
     df['Date'] = pd.to_datetime(df['Date'])
@@ -64,18 +60,23 @@ async def preprocessing(db: AsyncSession):
 
     df_scaled = []
     scalers = {}
-    columns = ['Open', 'Close', 'High', 'Low', 'Volume', 'RSI', 'SMA_20', 'Target']
+    columns = ['Open', 'Close', 'High', 'Low', 'Volume', 'Target', 'RSI', 'SMA_20']
 
     # Scale the data by ticker, since the values can differ a lot depending on the ticker we cant scale all at once
     for ticker in df['Ticker'].unique():
         scaler = MinMaxScaler()
         df_ticker = df[df['Ticker'] == ticker].copy()
         
+        df_ticker['RSI'] = ta.rsi(df_ticker['Close'], length=14)
+        df_ticker['SMA_20'] = ta.sma(df_ticker['Close'], length=20)
+        
         scaled_values = scaler.fit_transform(df_ticker[columns])
         
         df_ticker_scaled = pd.DataFrame(scaled_values, columns=columns, index=df_ticker['Date'])
         df_ticker_scaled['Ticker'] = df_ticker['Ticker'].values
         df_ticker_scaled['Day_of_the_week'] = df_ticker['Day_of_the_week'].values
+        
+        df_ticker_scaled.dropna(inplace=True)
         
         df_scaled.append(df_ticker_scaled)
         scalers[ticker] = scaler
@@ -85,10 +86,11 @@ async def preprocessing(db: AsyncSession):
     # Encode the Ticker column
     le = LabelEncoder()
     df_scaled['Ticker'] = le.fit_transform(df_scaled['Ticker'])
+
     return df_scaled, scalers, le
 
 # Creates a N days sequence of data and returns the X df( Values ), y df( Target ) and tickers_labels
-def create_sequences(df, N=60, columns=['Open', 'Close', 'High', 'Low', 'Volume', 'RSI', 'SMA_20'], target='Target'):
+def create_sequences(df, sequence_length=60, columns=['Open', 'Close', 'High', 'Low', 'Volume', 'RSI', 'SMA_20'], target='Target'):
     X_seq, X_dow, y, ticker_ids = [], [], [], []
 
     for ticker in df['Ticker'].unique():
@@ -97,13 +99,13 @@ def create_sequences(df, N=60, columns=['Open', 'Close', 'High', 'Low', 'Volume'
         targets = df_ticker[target].values
         dow_values = df_ticker['Day_of_the_week'].values
 
-        for i in range(len(data) - N):
-            seq = data[i:i+N]
-            dow = dow_values[i+N-1] 
+        for i in range(len(data) - sequence_length):
+            seq = data[i:i+sequence_length]
+            dow = dow_values[i+sequence_length-1] 
 
             X_seq.append(seq)
             X_dow.append(dow)
-            y.append(targets[i+N])
+            y.append(targets[i+sequence_length])
             ticker_ids.append(ticker)  # already encoded
 
     return (
@@ -144,75 +146,83 @@ def get_current_price(ticker):
     else:
         return {"ticker": ticker, "price": None, "error": "No data found"}
 
-# Gets historical data from Alpaca API and saves it to a CSV file
-async def get_historical_data_alpaca(db: AsyncSession):
-    client = StockHistoricalDataClient(
-        api_key=API_KEY,
-        secret_key=SECRET_KEY
-    )
-    
-    result = await db.execute(
-        select(func.max(StockData.date))
-    )
-    
-    last_date = result.scalar()
-    start_date = last_date + timedelta(days=1) if last_date else datetime(2015, 1, 1).date()
-
-    request_params = StockBarsRequest(
-        symbol_or_symbols=tickers,
-        timeframe=TimeFrame.Day,
-        start=start_date,
-        end=datetime.today().date()
-    )
-    
-    bars = client.get_stock_bars(request_params)
-    dfs = []
-    for ticker in tickers:
-        ticker_bars = bars[ticker]
-
-        df = pd.DataFrame([{
-        "Open": float(bar.open),
-        "High": float(bar.high),
-        "Low": float(bar.low),
-        "Close": float(bar.close),
-        "Volume": float(bar.volume),
-        "Ticker": ticker,
-        "Date": bar.timestamp.date().isoformat()
-    } for bar in ticker_bars])
+# Gets historical data from yfinance
+async def get_historical_data(db: AsyncSession):
         
-        df['RSI'] = ta.rsi(df['Close'], length=14)
-        df['SMA_20'] = ta.sma(df['Close'], length=20)
-        df.dropna(inplace=True)
-        df.sort_values('Date', inplace=True)
-        dfs.append(df)
+        # Calculate date range
+        current_date = datetime.now().date()
         
-    final_df = pd.concat(dfs, ignore_index=True)
-    final_df.sort_values(['Ticker', 'Date'], inplace=True)
-    
-    rows = [{
-        "ticker": row['Ticker'],
-        "date": pd.to_datetime(row['Date']).date(),
-        "open": float(row['Open']),
-        "high": float(row['High']),
-        "low": float(row['Low']),
-        "close": float(row['Close']),
-        "volume": int(row['Volume']),
-        "rsi": float(row['RSI']),
-        "sma20": float(row['SMA_20'])
-    } for _, row in final_df.iterrows()]
-    print(type(rows), type(rows[0])) 
+        result = await db.execute(
+            select(func.max(StockData.date))
+        )
+        
+        last_date = result.scalar()
+        last_date = last_date.date() if last_date else None
+        
+        # If we have data, start from the last date + 1 day
+        start_date = min(
+            (last_date + timedelta(days=1) if last_date else datetime(2010, 1, 1).date()),
+            current_date
+        ).isoformat()
+        
+        # End date should be today or the last market day
+        end_date = current_date.isoformat()
+        
+        print(f"Fetching historical data from {start_date} to {end_date}")
+        
+        # Only make the request if start_date is before end_date
+        if start_date >= end_date:
+            print("No new data to fetch - database is up to date")
+            return
+        
+        try:
+            historical_data = yf.download(tickers, start=start_date, end=end_date, progress=True, group_by='ticker', threads=True)
 
-    BATCH_SIZE = 500
+            dfs = []
+            
+            for ticker in tickers:
+                if ticker not in historical_data.columns.levels[0]:
+                    print(f"No data for ticker {ticker}")
+                    continue
 
-    for i in range(0, len(rows), BATCH_SIZE):
-        batch = rows[i:i + BATCH_SIZE]
+                df = historical_data[ticker].reset_index()
+                df['Ticker'] = ticker
+                dfs.append(df)
+                print(f"Added {len(df)} rows for {ticker}")
+            
+            if not dfs:
+                print("No data frames to concatenate")
+                return
+                
+            final_df = pd.concat(dfs, ignore_index=True)
+            print(f"Created final DataFrame with {len(final_df)} rows")
+            final_df.dropna(inplace=True)
 
-        stmt = insert(StockData).values(batch)
-        stmt = stmt.on_conflict_do_nothing(index_elements=['ticker', 'date'])
+            # Prepare rows for insertion
+            rows = [{
+                "ticker": row['Ticker'],
+                "date": pd.to_datetime(row['Date']).date(),
+                "open": float(row['Open']),
+                "high": float(row['High']),
+                "low": float(row['Low']),
+                "close": float(row['Close']),
+                "volume": int(row['Volume']),
+            } for _, row in final_df.iterrows()]
 
-        await db.execute(stmt)
+            # Insert in batches
+            BATCH_SIZE = 500
+            for i in range(0, len(rows), BATCH_SIZE):
+                batch = rows[i:i + BATCH_SIZE]
+                stmt = insert(StockData).values(batch)
+                stmt = stmt.on_conflict_do_nothing(index_elements=['ticker', 'date'])
+                await db.execute(stmt)
 
-    await db.commit()
+            await db.commit()
+            print(f"Committed {len(rows)} rows in total")
+
+        except Exception as e:
+            print(f"Error fetching data: {str(e)}")
+            raise
     
 # Gets recent stock newsfrom Alpaca API
 def get_stock_news(ticker: str):

@@ -15,7 +15,7 @@
     <div class="message">Don't have an account yet? <router-link to="/register" class="link">Sign Up</router-link></div>
 
     <button class='google' @click="loginWithGoogle">
-      <img src="/images/google.png" alt="Google Icon">
+      <img src="/google_logo.svg" style="width: 3rem; height: 3rem;" alt="Google Icon">
     </button>
   </div>
 </template>
@@ -86,18 +86,18 @@ const loginWithGoogle = async () => {
   max-width: 80%;
   height: auto;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 20px;
   background-color: var(--fondo-secundario);
-  border-radius: 0.5rem;
+  border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
+  font-family: 'AtkinsonHyperlegibleMono';
 }
 
 .title {
   font-size: 2rem;
   margin-bottom: 1rem;
-  font-family: 'AtkinsonHyperlegibleMono';
   font-weight: bold;
   text-align: center;
   color: var(--texto);
@@ -111,9 +111,9 @@ const loginWithGoogle = async () => {
 
 .form-group label {
   margin-bottom: 0.5rem;
+  font-weight: bold;
+  font-size: 1rem;
   color: var(--texto);
-  font-weight: 500;
-  font-family: 'AtkinsonHyperlegibleMono';
 }
 
 .form-group input {
@@ -123,8 +123,8 @@ const loginWithGoogle = async () => {
   outline: 0;
   border-radius: 0.5rem;
   font-size: 1rem;
+  margin-bottom: 0.5rem;
   color: var(--texto);
-  font-family: 'AtkinsonHyperlegibleMono';
 }
 
 .form-group input:focus {
@@ -138,25 +138,25 @@ const loginWithGoogle = async () => {
   box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
   padding: 0.75rem;
   text-align: center;
-  color: #ffff;
+  color: #FFFF;
   font-size: 1.2rem;
   font-family: 'AtkinsonHyperlegibleMono';
   border: none;
   border-radius: 0.375rem;
-  font-weight: 600;
+  font-weight: normal;
 }
 
 .message {
   margin-top: 1rem;
-  font-family: 'AtkinsonHyperlegibleMono';
   text-align: center;
+  font-size: 1rem;
+  font-weight: normal;
   color: var(--texto);
 }
 
 .link {
   color: var(--boton);
-  margin-left: 0.5rem;
-  font-family: 'AtkinsonHyperlegibleMono';
+  margin-left: 0.5vw;
   text-decoration: none;
   font-weight: bold;
 }
@@ -170,7 +170,7 @@ button:hover {
 .error {
   color: #e74c3c;
   text-align: center;
-  margin-top: 1rem;
+  margin-top: 1vh;
   font-weight: bold;
   font-family: 'AtkinsonHyperlegibleMono';
 
@@ -187,11 +187,11 @@ button:hover {
 .google {
   background-color: var(--fondo);
   border: none;
-  border-radius: 0.5rem;
   padding: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 1rem;
+  margin-top: 1vh;
+  cursor: pointer;
 }
 </style>

@@ -150,154 +150,175 @@ watch(lowBudgets, (newVal) => {
 <style scoped>
 .budget-view {
   font-family: 'AtkinsonHyperlegibleMono';
-  margin: 3rem auto;
-  width: 80%
+  margin: 2rem auto;
+  width: 90%;
+  max-width: 1200px;
+  padding: 0 1rem;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
 }
 
 .title {
-  font-size: 3vw;
+  font-size: 2rem;
   font-weight: bold;
-  color: #FFFF
+  color: #FFFF;
 }
 
 .subtitle {
-  font-size: 2vw;
+  font-size: 1.5rem;
   margin-bottom: 1rem;
-  color: #FFFF
+  color: #FFFF;
 }
 
 .add-budget {
-  display: inline-block;
-  padding: 0.5rem;
+  padding: 0.75rem 1.5rem;
   background-image: linear-gradient(144deg, #274e55, #267272 50%, #6becf5c5);
   color: #FFFF;
   border-radius: 0.5rem;
   text-decoration: none;
-  margin: 1vw;
-  font-size: 1vw;
+  margin: 0.5rem;
+  font-size: 1rem;
   border: none;
   cursor: pointer;
   font-family: 'AtkinsonHyperlegibleMono';
-}
-
-.add-budget:hover {
-  outline: 0;
-  transform: scale(1.05);
   transition: transform 0.2s ease-in-out;
-}
-
-.budget-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  min-width: 50%;
 }
 
 .budget-link {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 1rem;
+  padding: 1rem;
   margin-top: 1rem;
   border-radius: 10px;
-  background-color: #212529
+  background-color: #212529;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .link-content {
   display: flex;
-  text-decoration: none;
-  width: 90%;
+  flex: 1;
+  min-width: 280px;
 }
 
 .icon-dates {
   display: flex;
-  gap: 2vw;
+  gap: 1rem;
   align-items: center;
-  width: 90%;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
 .budget-category-icon {
-  flex: 0.3;
   width: 3rem;
   height: 3rem;
   border-radius: 20%;
-  font-size: xx-large;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .dates {
-  flex: 1.3;
   color: var(--texto);
-  display: flex;
-  gap: 1rem;
-  font-size: 1.3vw;
+  font-size: 1rem;
+  flex: 1;
+  min-width: 200px;
 }
 
 .amounts {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  flex: 1;
-  font-size: 1.3vw
+  gap: 0.5rem;
+  font-size: 1rem;
+  min-width: 150px;
 }
 
 .total-budget {
   color: #FFF;
-  text-align: right;
   margin: 0.1rem;
-  flex: 1
 }
 
 .buttons {
   display: flex;
-  flex-direction: column;
-  gap: 1vw;
-  margin: 1vw;
-  margin-left: 2vw;
-  font-family: 'AtkinsonHyperlegibleMono'
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.edit-budget,
+.delete-budget {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: transform 0.2s ease;
 }
 
 .edit-budget {
-  padding: 0.5vw;
   background-color: #ffb703;
-  border: none;
-  border-radius: 0.25rem;
-  cursor: pointer
 }
 
 .delete-budget {
-  padding: 0.5vw;
   background-color: #e76f51;
-  border: none;
-  border-radius: 0.25rem;
-  cursor: pointer
 }
 
 .progress-bar {
-  flex: 1;
   width: 100%;
   height: 0.5rem;
   background-color: #eee;
   border-radius: 0.2rem;
   overflow: hidden;
-}
-
-.progress-bar-fill {
-  height: 100%;
-  background-color: #e76f51;
-  transition: width 0.3s ease;
+  margin: 0.5rem 0;
 }
 
 .progress {
-  flex: 0.2;
-  text-decoration: none;
   color: #fff;
-  font-size: 1.3vw
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+/* Hover effects */
+.add-budget:hover,
+.edit-budget:hover,
+.delete-budget:hover {
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .budget-view {
+    width: 100%;
+    padding: 0 0.5rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+  }
+
+  .dates,
+  .amounts {
+    font-size: 0.9rem;
+  }
+
+  .buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .edit-budget,
+  .delete-budget {
+    width: 100%;
+    margin: 0.25rem 0;
+  }
 }
 </style>

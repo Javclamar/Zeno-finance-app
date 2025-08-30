@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Date, UniqueConstraint
+from sqlalchemy import Column, Integer, String, Float, Date, UniqueConstraint, BigInteger
 from app.db.base import Base
 
 class StockData(Base):
@@ -11,9 +11,7 @@ class StockData(Base):
     high = Column(Float)
     low = Column(Float)
     close = Column(Float)
-    volume = Column(Integer)
-    rsi = Column(Float)
-    sma20 = Column(Float)
+    volume = Column(BigInteger)
 
     def __repr__(self):
         return f"<StockData(ticker={self.ticker}, date={self.date}, close_price={self.close})>"

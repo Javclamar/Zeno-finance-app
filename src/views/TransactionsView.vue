@@ -222,20 +222,57 @@ watch(pageSize, () => {
   justify-content: space-between;
   align-items: center;
   margin: 1rem 0;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.page,
+.page-size {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .page-button {
-  margin: 0.5rem;
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 5px;
-  background-color: #212529;
+  min-width: 44px;
+  height: 40px;
+  background-color: #495057;
   color: #FFF;
   cursor: pointer;
 }
 
 .page-button:disabled {
-  background-color: #6c757d;
+  background-color: #212529;
   cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .pagination-buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .page,
+  .page-size {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .all-transactions {
+    max-width: 95%;
+    padding: 1rem;
+    margin: 1rem auto;
+  }
+}
+
+/* Add hover effects */
+.page-button:hover:not(:disabled) {
+  background-color: #343a40;
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
 }
 </style>

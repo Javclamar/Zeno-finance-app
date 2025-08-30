@@ -1,12 +1,12 @@
-from app.lstm_functions.data import preprocessing, create_sequences, get_historical_data_alpaca
+from app.lstm_functions.data import preprocessing, create_sequences, get_historical_data
 from app.lstm_functions.model import build_model
 import pickle
 import os
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
-from keras.callbacks import ModelCheckpoint
+from keras.callbacks import ModelCheckpoint, EarlyStopping
 from keras.models import load_model
 from keras.losses import Huber
-from keras.metrics import RootMeanSquaredError
+from keras.metrics import RootMeanSquaredError, MeanAbsolutePercentageError
 import numpy as np
 import matplotlib.pyplot as plt
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -20,12 +20,12 @@ LSTM_UTILS = os.path.join(BASE_DIR, '..', 'lstm_utils')
 
 
 async def train(db: AsyncSession):
+    
+    await get_historical_data(db)  # Fetches and saves historical data from yfinance if not already present
 
     df_scaled, scalers, le = await preprocessing(db) # Returns the df, the scalers used for the unique tickers, and the label encoder used for the ticker encoding
-    X_seq, y, ticker_ids, X_dow = create_sequences(df_scaled) # Creates 60 days sequence used to predict the next days close, returning the X, y df
+    X_seq, y, ticker_ids, X_dow = create_sequences(df_scaled, sequence_length=90) # Creates 60 days sequence used to predict the next days close, returning the X, y df
     num_tickers = len(le.classes_)
-    
-    print(df_scaled.head())
 
     # Train test splitting (needs to be done like this to dont shuffle the time series)
     split = int(0.8 * len(X_seq))
@@ -34,9 +34,7 @@ async def train(db: AsyncSession):
     ticker_train, ticker_test = ticker_ids[:split], ticker_ids[split:]
     X_dow_train, X_dow_test = X_dow[:split], X_dow[split:]
 
-
-
-    model = build_model(60, num_tickers=num_tickers, num_features=7)
+    model = build_model(90, num_tickers=num_tickers, num_features=7)
 
     print(f"X shape: {X_seq.shape}")
     print(f"y shape: {y.shape}")
@@ -49,24 +47,34 @@ async def train(db: AsyncSession):
         pickle.dump(le, f)
         
     checkpoint_cb = ModelCheckpoint(
-    os.path.join(LSTM_UTILS, 'stock_lstm_model.keras'), # Save path
-    save_best_only=True,          # Only save if val_loss improves
-    monitor="val_root_mean_squared_error", # You can monitor other metrics too
-    mode="min"                    # Use 'min' for loss
-)
+        os.path.join(LSTM_UTILS, 'stock_lstm_model.keras'), # Save path
+        save_best_only=True,          # Only save if val_loss improves
+        monitor="val_root_mean_squared_error", # You can monitor other metrics too
+        mode="min"                    # Use 'min' for loss
+        )
     
+    early_stopping = EarlyStopping(
+        monitor="val_root_mean_squared_error",
+        patience=5,
+        min_delta=0.0001,
+        verbose=1,
+        mode="min"
+    )
+    
+
     model.fit(
         [X_train, ticker_train, X_dow_train], y_train,
         validation_data=([X_test, ticker_test, X_dow_test], y_test),
-        epochs=20,
-        batch_size=32,
-        callbacks=[checkpoint_cb]
+        epochs=25,
+        batch_size=128,
+        callbacks=[checkpoint_cb, early_stopping]
     )
     
     model = load_model(os.path.join(LSTM_UTILS, 'stock_lstm_model.keras'),
                        custom_objects={
         'Huber': Huber,
-        'RootMeanSquaredError': RootMeanSquaredError
+        'RootMeanSquaredError': RootMeanSquaredError,
+        'MeanAbsolutePercentageError': MeanAbsolutePercentageError
     })
     # Predict on test set
     y_pred_scaled = model.predict([X_test, ticker_test, X_dow_test])

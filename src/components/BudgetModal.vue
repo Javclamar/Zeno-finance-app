@@ -16,9 +16,11 @@
           <label for='amount'> Budget Amount:</label>
           <input type='float' id='amount' v-model='budget.amount' min='1' required />
           <label for='startDate'>Start Date:</label>
-          <input type='date' id='startDate' v-model='budget.startDate' required />
+          <input type='date' id='startDate' v-model='budget.startDate' required pattern="\d{4}-\d{2}-\d{2}"
+            inputmode="numeric" :min="new Date().toISOString().split('T')[0]" />
           <label for='endDate'>End Date:</label>
-          <input type='date' id='endDate' v-model='budget.endDate' required />
+          <input type='date' id='endDate' v-model='budget.endDate' required pattern="\d{4}-\d{2}-\d{2}"
+            inputmode="numeric" :min="budget.startDate || new Date().toISOString().split('T')[0]" />
           <button class='submit' type='submit'>{{ props.budgetToUpdate ? 'Update' : 'Create' }}</button>
           <button class='close' @click=handleClose()>Close</button>
         </div>
@@ -29,7 +31,7 @@
 
 <script setup lang="ts">
 import router from '@/router';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 
@@ -142,104 +144,159 @@ function handleClose() {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+
 }
 
 .modal-content {
   background: #212529;
-  padding: 1.5rem;
-  border-radius: 8px;
-  width: 40rem;
-  flex-direction: column;
-  align-items: center;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 40rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  animation: modalFadeIn 0.3s ease-out;
+  font-family: 'AtkinsonHyperlegibleMono';
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-
+  gap: 1rem;
 }
 
 .form-title {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: bold;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   color: #FFFF;
-  font-family: 'AtkinsonHyperlegibleMono';
+  text-align: center;
 }
 
 .form-group label {
-  margin-bottom: 0.3rem;
   color: var(--texto);
   font-weight: 600;
-  font-family: 'AtkinsonHyperlegibleMono';
+  font-size: 0.9rem;
 }
 
-.form-group input {
-  padding: 0.3rem;
-  border: 1px solid var(--fondo);
-  background-color: var(--fondo-secundario);
-  outline: 0;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  color: var(--texto);
-  font-family: 'AtkinsonHyperlegibleMono';
-  margin-bottom: 2rem;
-}
-
-.form-group input:focus {
-  border-color: rgba(167, 139, 250);
-}
-
+.form-group input,
 .form-group select {
-  padding: 0.5rem;
+  padding: 0.75rem;
   border: 1px solid var(--fondo);
   background-color: var(--fondo-secundario);
-  outline: 0;
-  border-radius: 0.5rem;
+  outline: none;
+  border-radius: 8px;
   font-size: 1rem;
   color: var(--texto);
   font-family: 'AtkinsonHyperlegibleMono';
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+  transition: all 0.2s ease;
 }
 
+.form-group .form-group input:focus,
 .form-group select:focus {
-  border-color: rgba(167, 139, 250);
+  border-color: rgba(167, 139, 250, 0.8);
+  box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.2);
 }
 
+.form-group input:hover,
+.form-group select:hover {
+  border-color: rgba(167, 139, 250, 0.5);
+}
 
 .submit {
-  display: inline-block;
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.5rem;
   color: #fff;
-  border-radius: 0.5rem;
+  border-radius: 8px;
   text-decoration: none;
-  margin: 1rem;
+  margin: 1rem 0;
   font-size: 1rem;
   background-image: linear-gradient(144deg, #274e55, #267272 50%, #6becf5c5);
   border: none;
   font-weight: bold;
   cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'AtkinsonHyperlegibleMono';
 }
 
 .submit:hover {
-  outline: 0;
-  transform: scale(1.05);
-  transition: transform 0.2s ease-in-out;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(107, 236, 245, 0.2);
+}
+
+.submit:active {
+  transform: translateY(0);
 }
 
 .close {
-  text-align: center;
-  margin: auto;
-  background-color: #0000;
-  padding: 1rem;
+  width: 100%;
+  padding: 0.75rem;
   border: none;
   color: #b94f41;
   font-weight: bold;
   font-size: 1rem;
   cursor: pointer;
+  background: transparent;
+  transition: all 0.2s ease;
+  font-family: 'AtkinsonHyperlegibleMono';
+}
+
+.close:hover {
+  color: #e76f51;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .modal-content {
+    padding: 1.5rem;
+  }
+
+  .form-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal {
+    padding: 0.5rem;
+  }
+
+  .modal-content {
+    padding: 1rem;
+  }
+
+  .form-title {
+    font-size: 1.25rem;
+  }
+
+  .form-group input,
+  .form-group select {
+    padding: 0.6rem;
+    font-size: 0.95rem;
+  }
+
+  .submit,
+  .close {
+    padding: 0.6rem;
+    font-size: 0.95rem;
+  }
 }
 </style>
